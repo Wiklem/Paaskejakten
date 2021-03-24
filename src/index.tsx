@@ -2,11 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
-import Landingpage from "./containers/Landingpage";
+import Layout from "./components/Layout/Layout";
 
 ReactDOM.render(
   <React.StrictMode>
-    <Landingpage />
+    <Layout />
   </React.StrictMode>,
   document.getElementById("root")
 );

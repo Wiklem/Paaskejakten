@@ -31,11 +31,11 @@ const EasterContextProvider: React.FC = ({ children }) => {
 
   React.useEffect(() => {
     if (!step) setStep(localStorage.getItem("step") || "0");
-    // const interval = setInterval(() => {
-    navigator.geolocation.getCurrentPosition(success);
-    // }, 1000);
-    // return () => clearInterval(interval);
-  }, []);
+    const interval = setInterval(() => {
+      navigator.geolocation.getCurrentPosition(success);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [step]);
 
   if (!currentPosition || !step) return <Loading />;
   return (

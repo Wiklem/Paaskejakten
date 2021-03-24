@@ -1,13 +1,15 @@
 import React from "react";
-import "./countdown.css";
 import Loading from "./Loading";
-import {timeDifference} from "./Utils";
+import { timeDifference } from "./Utils";
 
-const Countdown = () => {
+interface ICountdown {
+  readyCallback: (state: boolean) => void;
+}
+const Countdown: React.FC<ICountdown> = ({ readyCallback }) => {
   const [timeLeft, setTimeLeft] = React.useState<any>();
 
   const calculateTimeLeft = () => {
-    const difference = timeDifference()
+    const difference = timeDifference();
     return {
       dager: Math.floor(difference / (1000 * 60 * 60 * 24)),
       timer: Math.floor((difference / (1000 * 60 * 60)) % 24),
@@ -15,6 +17,8 @@ const Countdown = () => {
       sekunder: Math.floor((difference / 1000) % 60),
     };
   };
+
+  readyCallback(timeDifference() <= 0);
 
   React.useEffect(() => {
     const interval = setInterval(() => {
@@ -26,7 +30,7 @@ const Countdown = () => {
   if (!timeLeft) return <Loading />;
 
   return (
-    <div className={"container"}>
+    <div>
       Der er{" "}
       {timeLeft &&
         Object.keys(timeLeft).map((key) => (

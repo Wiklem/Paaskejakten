@@ -1,13 +1,3 @@
-.container {
-    background-color: #282c34;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-size: calc(10px + 1vmin);
-    color: white;
-}
-
 .easterEgg {
     margin: 50px;
     justify-content: center;
@@ -15,11 +5,11 @@
     pointer-events: none;
 }
 
-.rainbowText {
-    background-image: linear-gradient(to left,  green, yellow, orange, red);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+.container {
+    margin-top: 30px;
+
 }
+
 
 @media (prefers-reduced-motion: no-preference) {
     .easterEgg {

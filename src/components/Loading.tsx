@@ -1,7 +1,7 @@
 import React from "react";
-
+import { Spin } from "antd";
 const Loading = () => {
-  return <span>Laster...</span>
+  return <Spin size="large" />;
 };
 
 export default Loading;

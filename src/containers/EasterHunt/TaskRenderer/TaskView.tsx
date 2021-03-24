@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Input } from "antd";
+import { Alert, Button, Input } from "antd";
 import { EasterContext } from "../../../components/EasterContext";
 import { ITask } from "../../../api/types";
 import styles from "./TaskView.module.css";
@@ -9,11 +9,11 @@ interface ITaskView {
 }
 const TaskView: React.FC<ITaskView> = ({ task }) => {
   const { nextTask } = React.useContext(EasterContext);
-  const [answer, setAnswer] = React.useState("");
+  const [answer, setAnswer] = React.useState<string | undefined>(undefined);
 
   const correctView = () => (
     <div>
-      {answer} er <span className={styles.rainbowText}>RIKTIG!</span>
+      <Alert message={answer + " er riktig"} type="success" showIcon />
       <div>
         <Button
           onClick={() => {
@@ -28,11 +28,27 @@ const TaskView: React.FC<ITaskView> = ({ task }) => {
     </div>
   );
 
+  const incorrectView = () => (
+    <div>
+      <Alert message={answer + " er feil"} type="error" showIcon />
+    </div>
+  );
+
   return (
     <div className={styles.taskContainer}>
       <div>{task.taskInfo}</div>
-      <Input placeholder="Svar" onChange={(e) => setAnswer(e.target.value)} />
-      {answer === task.correctAnswer && correctView()}
+      <Input.Search
+        allowClear
+        enterButton="Ok"
+        size="large"
+        placeholder="Angi svar"
+        onSearch={(value) => setAnswer(value)}
+      />
+      {answer !== undefined
+        ? answer === task.correctAnswer
+          ? correctView()
+          : incorrectView()
+        : null}
     </div>
   );
 };
