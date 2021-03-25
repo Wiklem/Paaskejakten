@@ -14,6 +14,7 @@ interface ILandingpage {
 const Landingpage: React.FC<ILandingpage> = ({ dev }) => {
   const [isModalVisible, setIsModalVisible] = React.useState(false);
   const [name, setName] = React.useState("");
+  const [huntCode, setHuntCode] = React.useState("");
   const [error, setError] = React.useState("");
   const [ready, setReady] = React.useState(false);
   const showModal = () => {
@@ -58,7 +59,9 @@ const Landingpage: React.FC<ILandingpage> = ({ dev }) => {
       >
         {error && <Alert message={error} type="error" showIcon />}
         <p>Hvem er du?</p>
-        <Input placeholder={"navn"} onChange={(e) => setName(e.target.value)} />
+        <Input placeholder={"Navn"} onChange={(e) => setName(e.target.value)} />
+        <p>Jaktkode:</p>
+        <Input placeholder={"Påske kode"} onChange={(e) => setHuntCode(e.target.value)} />
       </Modal>
     </>
   );
