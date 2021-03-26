@@ -1,18 +1,22 @@
 import React from "react";
 import { ITask } from "../../../utils/types";
-import Map from "../../../components/Map/Map";
+import MapComponent from "../../../components/Map/MapComponent";
 import MapDistance from "../../../components/Map/MapDistance";
-import MapInfo from "../../../components/Map/MapInfo";
 import TaskView from "./TaskView";
 import { Card } from "antd";
+import EggMarker from "../../../components/Map/EggMarker";
 
 interface IdistanceValues {
   text: string;
   value: number;
 }
 
-const TaskRenderer: React.FC<ITask> = (props) => {
-  const { location, mapHint } = props;
+interface ITaskRenderer {
+  task: ITask;
+  taskKey: number;
+}
+
+const TaskRenderer: React.FC<ITaskRenderer> = ({ taskKey, task }) => {
   const [distanceValues, setDistanceValues] = React.useState<IdistanceValues>();
   const [distance, setDistance] = React.useState<any>();
   const [showTask, setShowTask] = React.useState(false);
@@ -32,20 +36,26 @@ const TaskRenderer: React.FC<ITask> = (props) => {
 
   const distanceToUnlock = () => {
     if (distanceValues && distanceValues.text)
-      return <p>Du er {distanceValues.text} unna å låse opp oppgaven!</p>;
+      return (
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <h2>Du er {distanceValues.text} unna å låse opp oppgaven!</h2>
+        </div>
+      );
   };
 
   const renderMap = () => (
-    <Map>
-      <MapDistance location={location} distanceCallback={setDistance} />
-      <MapInfo location={location} mapHint={mapHint} />
-    </Map>
+    <MapComponent>
+      <>
+        <MapDistance location={task.location} distanceCallback={setDistance} />
+        {task.location && <EggMarker location={task.location} />}
+      </>
+    </MapComponent>
   );
 
   return (
-    <Card title={<strong>Oppgave {props.number}</strong>} cover={props.cover}>
+    <Card title={<strong>Oppgave {taskKey + 1}</strong>} cover={task.cover}>
       {showTask ? (
-        <TaskView task={props} />
+        <TaskView task={task} />
       ) : (
         <>
           {distanceToUnlock()} {renderMap()}

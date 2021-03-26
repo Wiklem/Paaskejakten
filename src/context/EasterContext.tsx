@@ -3,22 +3,22 @@ import Loading from "../components/Loading";
 
 interface IEasterContext {
   currentPosition: object;
-  step?: string;
-  nextTask: (type: string) => void;
+  step: number;
+  nextTask: () => void;
 }
 export const EasterContext = React.createContext<IEasterContext>({
   currentPosition: {},
-  step: undefined,
+  step: 1,
   nextTask: () => {},
 });
 
 const EasterContextProvider: React.FC = ({ children }) => {
   const [currentPosition, setCurrentPosition] = React.useState({});
-  const [step, setStep] = React.useState<string | undefined>();
+  const [step, setStep] = React.useState<number>(1);
 
-  const nextTask = (taskNumber: string) => {
-    localStorage.setItem("step", taskNumber);
-    setStep(taskNumber);
+  const nextTask = () => {
+    // localStorage.setItem("step", taskNumber);
+    setStep(step + 1);
   };
 
   const success = (position: any) => {
@@ -30,12 +30,12 @@ const EasterContextProvider: React.FC = ({ children }) => {
   };
 
   React.useEffect(() => {
-    if (!step) setStep(localStorage.getItem("step") || "0");
-    const interval = setInterval(() => {
-      navigator.geolocation.getCurrentPosition(success);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [step]);
+    // if (!step) setStep(localStorage.getItem("step") || "0");
+    // const interval = setInterval(() => {
+    navigator.geolocation.getCurrentPosition(success);
+    // }, 1000);
+    // return () => clearInterval(interval);
+  }, []);
 
   if (!currentPosition || !step) return <Loading />;
   return (

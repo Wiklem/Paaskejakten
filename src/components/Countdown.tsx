@@ -5,12 +5,14 @@ import { Alert } from "antd";
 
 interface ICountdown {
   readyCallback: (state: boolean) => void;
+  time: Date;
 }
-const Countdown: React.FC<ICountdown> = ({ readyCallback }) => {
+const Countdown: React.FC<ICountdown> = ({ readyCallback, time }) => {
   const [timeLeft, setTimeLeft] = React.useState<any>();
 
   const calculateTimeLeft = () => {
-    const difference = timeDifference();
+    const difference = timeDifference(time);
+    if (difference <= 0) readyCallback(true);
     return {
       dager: Math.floor(difference / (1000 * 60 * 60 * 24)),
       timer: Math.floor((difference / (1000 * 60 * 60)) % 24),
@@ -19,14 +21,12 @@ const Countdown: React.FC<ICountdown> = ({ readyCallback }) => {
     };
   };
 
-  readyCallback(timeDifference() <= 0);
-
   React.useEffect(() => {
     const interval = setInterval(() => {
       setTimeLeft(calculateTimeLeft);
     }, 1000);
     return () => clearInterval(interval);
-  }, []);
+  });
 
   if (!timeLeft) return <Loading />;
 

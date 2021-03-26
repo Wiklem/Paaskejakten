@@ -3,17 +3,23 @@ export interface ILocation {
   lng: number;
 }
 
-interface IAlternatives {
-  alternative: string;
-  description: string;
-}
-
 export interface ITask {
-  number: string;
-  taskInfo?: JSX.Element | string;
-  correctAnswer?: string;
+  taskId?: string;
+  type?: string;
+  description: string;
+  correct?: string;
   location: ILocation;
   mapHint?: JSX.Element | string;
-  alternatives?: Array<IAlternatives>;
+  alternatives?: Array<string>;
   cover?: JSX.Element;
+}
+
+export interface IHunt {
+  name: string;
+  huntId: string;
+  activeDate: Date;
+  date: Date;
+  tasks: Array<ITask>;
+  finishTitle: string;
+  finishText: string;
 }

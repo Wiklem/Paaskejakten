@@ -1,8 +1,8 @@
 import React from "react";
 import { Alert, Button, Input, Radio } from "antd";
-import { EasterContext } from "../../../components/EasterContext";
 import { ITask } from "../../../utils/types";
 import styles from "./TaskView.module.css";
+import { EasterContext } from "../../../context/EasterContext";
 
 interface ITaskView {
   task: ITask;
@@ -10,7 +10,6 @@ interface ITaskView {
 const TaskView: React.FC<ITaskView> = ({ task }) => {
   const { nextTask } = React.useContext(EasterContext);
   const [answer, setAnswer] = React.useState<string | undefined>(undefined);
-
   const correctView = () => (
     <div className={styles.answerLabel}>
       <Alert message={answer + " er riktig"} type="success" showIcon />
@@ -19,11 +18,7 @@ const TaskView: React.FC<ITaskView> = ({ task }) => {
           className={styles.nextButton}
           type="primary"
           block
-          onClick={() => {
-            let nextVal = parseInt(task.number);
-            nextVal++;
-            nextTask(nextVal.toString());
-          }}
+          onClick={() => nextTask()}
         >
           Gå til neste oppgave
         </Button>
@@ -38,11 +33,10 @@ const TaskView: React.FC<ITaskView> = ({ task }) => {
   );
 
   const inputOptions = () =>
-    task.alternatives ? (
+    task.type === "flervalg" ? (
       <Radio.Group onChange={(e) => setAnswer(e.target.value)} value={answer}>
-        {task.alternatives.map((a) => (
-          <Radio value={a.alternative}>{a.description}</Radio>
-        ))}
+        {task.alternatives &&
+          task.alternatives.map((a) => <Radio value={a}>{a}</Radio>)}
       </Radio.Group>
     ) : (
       <Input.Search
@@ -56,10 +50,10 @@ const TaskView: React.FC<ITaskView> = ({ task }) => {
 
   return (
     <>
-      <div>{task.taskInfo}</div>
+      <strong>{task.description}</strong>
       {inputOptions()}
       {answer !== undefined
-        ? answer.toLowerCase() === task.correctAnswer?.toLowerCase()
+        ? answer.toLowerCase() === task.correct?.toLowerCase()
           ? correctView()
           : incorrectView()
         : null}
