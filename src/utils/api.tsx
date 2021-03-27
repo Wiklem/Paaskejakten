@@ -26,6 +26,10 @@ export function useApi(path: string, opt?: any) {
     axios({
       method: "post",
       url: functionUrl + path,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json",
+      },
       data: {
         ...opt,
       },
