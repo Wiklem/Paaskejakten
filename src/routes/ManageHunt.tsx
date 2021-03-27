@@ -30,7 +30,7 @@ const ManageHunt: React.FC = () => {
       );
     return (
       <>
-        <strong>Dine påskejakter </strong>
+        {uid && <NewHunt id={uid} reload={() => reload()} />}
         <br />
         <List
           style={{ width: " 400px" }}
@@ -65,12 +65,12 @@ const ManageHunt: React.FC = () => {
             </List.Item>
           )}
         />
-        {uid && <NewHunt id={uid} reload={() => reload()} />}
       </>
     );
   };
 
   const renderProcess = (process: any) => {
+    if (!uid) return <Loading />;
     switch (process.state) {
       case apiStates.LOADING:
         return <Loading />;

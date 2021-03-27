@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "../../assets/easter-egg.svg";
+import easterEgg from "../../assets/easter-egg.png";
 import { Marker } from "@react-google-maps/api";
 import { ILocation } from "../../utils/types";
 
@@ -13,17 +13,7 @@ const EggMarker: React.FC<IEggMarker> = ({ location }) => {
     <Marker
       position={location}
       onClick={() => setShowInfo(!showInfo)}
-      icon={{
-        url: logo,
-        scaledSize:
-          window &&
-          //@ts-ignore
-          window.google &&
-          //@ts-ignore
-          window.google.maps &&
-          //@ts-ignore
-          new window.google.maps.Size(100, 100),
-      }}
+      icon={{ url: easterEgg }}
     />
   );
 };

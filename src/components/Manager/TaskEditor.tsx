@@ -1,6 +1,6 @@
 import React from "react";
 import { IHunt, ILocation, ITask } from "../../utils/types";
-import { Button, Card, Radio, Form, Input } from "antd";
+import { Button, Card, Radio, Form, Input, Tooltip } from "antd";
 import axios from "axios";
 import { functionUrl } from "../../utils/api";
 import Loading from "../Loading";
@@ -91,8 +91,10 @@ const TaskEditor: React.FC<ITaskEditor> = ({ number, task, reload }) => {
   if (selectPosition)
     return (
       <div>
-        <Button onClick={() => setSelectPosition(false)}>Lukk kart</Button>
-        {viewPosition()}
+        <Button block type={"primary"} onClick={() => setSelectPosition(false)}>
+          Lukk kart
+        </Button>
+        <Card> {viewPosition()} </Card>
         <MapComponent locationCallback={positionCallback}>
           {position && <EggMarker location={position} />}
         </MapComponent>
@@ -104,9 +106,13 @@ const TaskEditor: React.FC<ITaskEditor> = ({ number, task, reload }) => {
       title={"Oppgave " + number}
       extra={
         ready ? (
-          <CheckCircleTwoTone twoToneColor="#52c41a" />
+          <Tooltip title="Oppgaven er klar">
+            <CheckCircleTwoTone twoToneColor="#52c41a" />
+          </Tooltip>
         ) : (
-          <FrownTwoTone twoToneColor={"red"} />
+          <Tooltip title="Oppgaven er ufulstendig og vil ikke vises i jakten">
+            <FrownTwoTone twoToneColor={"red"} />
+          </Tooltip>
         )
       }
       actions={

@@ -38,6 +38,7 @@ export function useApi(path: string, opt?: any) {
         setPartData({
           state: apiStates.SUCCESS,
           data: response.data,
+          error: "",
         });
       })
       .catch(() => {

@@ -96,13 +96,16 @@ export const updateHunt = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
     const huntId = req.body.huntId;
     if (!huntId) res.status(404).send(404);
-    await db.collection("hunts").doc(huntId).set(
-      {
-        // activeDate: req.body.activeDate || undefined,
-        name: req.body.name,
-      },
-      { merge: true }
-    );
+    await db
+      .collection("hunts")
+      .doc(huntId)
+      .set(
+        {
+          activeDate: req.body.activeDate || null,
+          name: req.body.name,
+        },
+        { merge: true }
+      );
     res.status(200).send("ok");
   });
 });

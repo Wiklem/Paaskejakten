@@ -74,10 +74,18 @@ const EditHunt: React.FC<IEditHunt> = ({ hunt, back }) => {
   return (
     <div>
       <PageHeader
-        style={{ backgroundColor: "white", width: "80vw" }}
+        style={{ backgroundColor: "white" }}
         onBack={() => back()}
         title={name}
-        subTitle={"Opprettet: " + moment(hunt.date).format("DD.MM.YYYY")}
+        subTitle={
+          <>
+            <span> Opprettet: {moment(hunt.date).format("DD.MM.YYYY")}</span>
+            <br />
+            <span>
+              Kode: <strong>{hunt.huntId}</strong>
+            </span>
+          </>
+        }
       />
       <Card
         actions={[
@@ -111,9 +119,7 @@ const EditHunt: React.FC<IEditHunt> = ({ hunt, back }) => {
           >
             <DatePicker
               locale={locale}
-              defaultPickerValue={
-                activeDate && moment(activeDate, "DD-MM-YYYY")
-              }
+              value={activeDate && moment(activeDate)}
               showTime
               onChange={(date, dateString) =>
                 setActiveDate(new Date(dateString))
@@ -142,22 +148,32 @@ const EditHunt: React.FC<IEditHunt> = ({ hunt, back }) => {
           </Form.Item>
         </Form>
       </Card>
-      <Button onClick={() => newTask()}> Ny Oppgave</Button>
+      <div
+        style={{ display: "flex", justifyContent: "center", marginTop: "10px" }}
+      >
+        <Button type={"primary"} onClick={() => newTask()}>
+          Ny Oppgave
+        </Button>
+      </div>
       <div style={{ display: "flex", flexDirection: "column" }}>
         {loading ? (
           <Loading />
         ) : tasks ? (
-          tasks.map((task, key) => {
-            return (
-              <TaskEditor
-                number={key + 1}
-                key={key}
-                huntId={hunt.huntId}
-                task={task}
-                reload={() => reload()}
-              />
-            );
-          })
+          tasks
+            .sort(
+              (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+            )
+            .map((task, key) => {
+              return (
+                <TaskEditor
+                  number={key + 1}
+                  key={key}
+                  huntId={hunt.huntId}
+                  task={task}
+                  reload={() => reload()}
+                />
+              );
+            })
         ) : (
           "Det er ingen oppgaver i denne påskejakten"
         )}

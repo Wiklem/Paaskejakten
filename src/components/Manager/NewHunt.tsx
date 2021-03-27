@@ -39,7 +39,7 @@ const NewHunt: React.FC<INewHunt> = ({ id, reload }) => {
 
   return (
     <div>
-      <Button onClick={() => setIsModalVisible(true)}>
+      <Button type={"primary"} onClick={() => setIsModalVisible(true)}>
         Opprett en ny påskejakt
       </Button>
       <Modal

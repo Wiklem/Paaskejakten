@@ -22,7 +22,7 @@ const TaskRenderer: React.FC<ITaskRenderer> = ({ taskKey, task }) => {
   const [showTask, setShowTask] = React.useState(false);
 
   React.useEffect(() => {
-    if (task.location && distance) {
+    if (distance) {
       const distanceValues = distance.rows[0].elements[0].distance;
       if (distanceValues.value <= 10) {
         setShowTask(true);
@@ -31,8 +31,6 @@ const TaskRenderer: React.FC<ITaskRenderer> = ({ taskKey, task }) => {
         setShowTask(false);
         setDistanceValues(distanceValues);
       }
-    } else {
-      setShowTask(true);
     }
   }, [distance]);
 
@@ -56,7 +54,7 @@ const TaskRenderer: React.FC<ITaskRenderer> = ({ taskKey, task }) => {
 
   return (
     <Card title={<strong>Oppgave {taskKey + 1}</strong>} cover={task.cover}>
-      {showTask ? (
+      {showTask || !task.location ? (
         <TaskView task={task} />
       ) : (
         <>

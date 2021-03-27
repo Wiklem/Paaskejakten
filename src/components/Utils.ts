@@ -1,4 +1,3 @@
 export const timeDifference = (date: Date): number => {
-  //@ts-ignore
-  return new Date(date) - new Date();
+  return new Date(date).getTime() - new Date().getTime();
 };

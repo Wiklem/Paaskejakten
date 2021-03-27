@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams, Link } from "react-router-dom";
 import { apiStates, useApi } from "../utils/api";
-import { Result, Button, Card } from "antd";
+import { Result, Button, Card, PageHeader } from "antd";
 import { IHunt } from "../utils/types";
 import Countdown from "../components/Countdown";
 import Loading from "../components/Loading";
@@ -22,7 +22,8 @@ const Hunt: React.FC = () => {
   const renderComponent = (data: IHunt) => {
     return (
       <div>
-        {data.name}
+        <PageHeader style={{ backgroundColor: "white" }} title={data.name} />
+        <br />
         {data.activeDate ? (
           ready ? (
             <Tasks hunt={data} />

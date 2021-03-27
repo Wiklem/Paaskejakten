@@ -2,12 +2,14 @@ import * as React from "react";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import API from "../../utils/keys";
 import { ILocation } from "../../utils/types";
-import mapIcon from "../../assets/mapPin.png";
+import bunnyPin from "../../assets/bunny-pin.png";
 import { EasterContext } from "../../context/EasterContext";
+
 interface IMapComponent {
   locationCallback?: (cord: ILocation) => void;
   // todo setCenterInput
 }
+
 const MapComponent: React.FC<IMapComponent> = ({
   children,
   locationCallback,
@@ -18,13 +20,15 @@ const MapComponent: React.FC<IMapComponent> = ({
     lng: 8.092905,
   };
 
+  const mapContainer = {
+    minHeight: "50vh",
+    width: "100%",
+  };
+
   return (
     <LoadScript googleMapsApiKey={API.GOOGLE}>
       <GoogleMap
-        mapContainerStyle={{
-          height: "80vh",
-          width: "80vw",
-        }}
+        mapContainerStyle={mapContainer}
         zoom={15}
         center={currentPosition || defaultCenter}
         onClick={(e) =>
@@ -34,21 +38,7 @@ const MapComponent: React.FC<IMapComponent> = ({
       >
         {children}
         {currentPosition && (
-          <Marker
-            position={currentPosition}
-            icon={{
-              url: mapIcon,
-
-              scaledSize:
-                window &&
-                //@ts-ignore
-                window.google &&
-                //@ts-ignore
-                window.google.maps &&
-                //@ts-ignore
-                new window.google.maps.Size(50, 50),
-            }}
-          />
+          <Marker position={currentPosition} icon={{ url: bunnyPin }} />
         )}
       </GoogleMap>
     </LoadScript>

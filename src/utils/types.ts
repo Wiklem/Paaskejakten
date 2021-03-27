@@ -12,6 +12,7 @@ export interface ITask {
   mapHint?: JSX.Element | string;
   alternatives?: Array<string>;
   cover?: JSX.Element;
+  date: Date;
 }
 
 export interface IHunt {
