@@ -3,13 +3,13 @@ import styles from "./Layout.module.css";
 import { Button, PageHeader } from "antd";
 import { Link } from "react-router-dom";
 import logo from "../../assets/logo.png";
-import { LoginOutlined, LogoutOutlined } from "@ant-design/icons";
+import { EditOutlined, LoginOutlined, LogoutOutlined } from "@ant-design/icons";
 import { AuthContext } from "../../context/AuthContext";
 
 interface IHeader {}
 
 const Header: React.FC<IHeader> = () => {
-  const { user, signIn, signOut } = React.useContext(AuthContext);
+  const { uid, signIn, signOut } = React.useContext(AuthContext);
   return (
     <div className={styles.header}>
       <PageHeader
@@ -20,10 +20,10 @@ const Header: React.FC<IHeader> = () => {
         }
         avatar={{ src: logo, shape: "square" }}
         extra={
-          user ? (
+          uid ? (
             <>
               <Link to={"/administrer"}>
-                <Button icon={<LogoutOutlined />}>Mine påskejakter</Button>
+                <Button icon={<EditOutlined />}>Mine påskejakter</Button>
               </Link>
               <Button icon={<LogoutOutlined />} onClick={signOut}>
                 Logg ut
@@ -31,7 +31,7 @@ const Header: React.FC<IHeader> = () => {
             </>
           ) : (
             <Button icon={<LoginOutlined />} onClick={signIn}>
-              Logg inn
+              Administrer påskejakt
             </Button>
           )
         }

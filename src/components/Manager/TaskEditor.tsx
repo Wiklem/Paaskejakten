@@ -3,10 +3,10 @@ import { IHunt, ILocation, ITask } from "../../utils/types";
 import { Button, Card, Radio, Form, Input } from "antd";
 import axios from "axios";
 import { functionUrl } from "../../utils/api";
-import Loading from "../../components/Loading";
+import Loading from "../Loading";
 import { CheckCircleTwoTone, FrownTwoTone } from "@ant-design/icons";
-import MapComponent from "../../components/Map/MapComponent";
-import EggMarker from "../../components/Map/EggMarker";
+import MapComponent from "../Map/MapComponent";
+import EggMarker from "../Map/EggMarker";
 const { Search } = Input;
 
 interface ITaskEditor {
@@ -29,7 +29,9 @@ const TaskEditor: React.FC<ITaskEditor> = ({ number, task, reload }) => {
   const [alternatives, setAlternatives] = React.useState<Array<string>>(
     task.alternatives || []
   );
-  const [position, setPosition] = React.useState<ILocation>(task.location);
+  const [position, setPosition] = React.useState<ILocation | undefined>(
+    task.location
+  );
   const [selectPosition, setSelectPosition] = React.useState(false);
   const [ready, setReady] = React.useState(false);
 
@@ -123,9 +125,21 @@ const TaskEditor: React.FC<ITaskEditor> = ({ number, task, reload }) => {
       style={{ marginTop: 10 }}
     >
       <Form layout="vertical">
-        <Form.Item label="Oppgave lokasjon">
+        <Form.Item
+          label="Oppgave lokasjon"
+          tooltip={
+            "Setter lokasjon for oppgaven. Man må være innenfor en radius på 20m til valgt lokasjon for å få opp oppgaven. Er ingen lokasjon satt vil oppgaven vises uten at man trenger å forflytte seg til den."
+          }
+        >
           <Button disabled={!edit} onClick={() => setSelectPosition(true)}>
-            Sett lokasjon
+            Velg lokasjon
+          </Button>
+          <Button
+            disabled={!edit}
+            danger
+            onClick={() => setPosition(undefined)}
+          >
+            Slett lokasjon
           </Button>
 
           <br />

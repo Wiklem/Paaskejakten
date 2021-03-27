@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Card } from "antd";
+import { Button, Card, Form } from "antd";
 import { Input } from "antd";
 import logo from "../assets/easter-egg.svg";
 import { Link } from "react-router-dom";
@@ -11,10 +11,20 @@ const Landingpage: React.FC = () => {
   return (
     <>
       <Card title={"Påskejakt kode"} style={{ width: 300 }}>
-        <Input
-          placeholder={"Påske kode"}
-          onChange={(e) => setCode(e.target.value)}
-        />
+        <Form layout="vertical">
+          <Form.Item
+            label="Påskejakt kode"
+            tooltip={
+              "Her skriver du inn koden du har fått for å starte påskejakten"
+            }
+          >
+            <Input
+              placeholder={"kode"}
+              onChange={(e) => setCode(e.target.value)}
+            />
+          </Form.Item>
+        </Form>
+
         <Link to={"/jakt/" + code}>
           <div
             style={{

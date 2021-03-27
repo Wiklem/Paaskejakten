@@ -14,7 +14,7 @@ import { functionUrl } from "../../utils/api";
 import axios from "axios";
 import locale from "antd/es/date-picker/locale/nb_NO";
 import TaskEditor from "./TaskEditor";
-import Loading from "../../components/Loading";
+import Loading from "../Loading";
 const { TextArea } = Input;
 
 interface IEditHunt {
@@ -50,11 +50,13 @@ const EditHunt: React.FC<IEditHunt> = ({ hunt, back }) => {
   };
 
   const updateHunt = () => {
-    axios.post(functionUrl + "updateHunt", {
-      huntId: hunt.huntId,
-      activeDate,
-      name,
-    });
+    axios
+      .post(functionUrl + "updateHunt", {
+        huntId: hunt.huntId,
+        activeDate,
+        name,
+      })
+      .then(() => reload());
   };
 
   const getTasks = () =>
@@ -74,7 +76,7 @@ const EditHunt: React.FC<IEditHunt> = ({ hunt, back }) => {
       <PageHeader
         style={{ backgroundColor: "white", width: "80vw" }}
         onBack={() => back()}
-        title={hunt.name}
+        title={name}
         subTitle={"Opprettet: " + moment(hunt.date).format("DD.MM.YYYY")}
       />
       <Card
@@ -94,11 +96,19 @@ const EditHunt: React.FC<IEditHunt> = ({ hunt, back }) => {
         ]}
       >
         <Form labelCol={{ span: 2 }} layout="horizontal">
-          <Form.Item label="Navn">
+          <Form.Item
+            label="Name"
+            tooltip={"Navnet som skal vises for påskejakten"}
+          >
             <Input value={name} onChange={(e) => setName(e.target.value)} />
           </Form.Item>
 
-          <Form.Item label="Aktiv dato:">
+          <Form.Item
+            label="Aktiv dato"
+            tooltip={
+              "Dato påskejakten skal bli aktiv. Hvis ingen dato blir satt er påskejakten automatisk aktiv."
+            }
+          >
             <DatePicker
               locale={locale}
               defaultPickerValue={
@@ -110,13 +120,21 @@ const EditHunt: React.FC<IEditHunt> = ({ hunt, back }) => {
               }
             />
           </Form.Item>
-          <Form.Item label="Ferdig tittel">
+          <Form.Item
+            label="Ferdig tittel"
+            tooltip={
+              "Tittel på kortet som kommer opp når alle oppgavene i påskejakten er løst"
+            }
+          >
             <Input
               value={finishTitle}
               onChange={(e) => setFinishTitle(e.target.value)}
             />
           </Form.Item>
-          <Form.Item label="Ferdig tekst">
+          <Form.Item
+            label="Ferdig tekst"
+            tooltip={"Teksten i kortet som kommer opp når påskejakten er løst"}
+          >
             <TextArea
               value={finishText}
               onChange={(e) => setFinishText(e.target.value)}

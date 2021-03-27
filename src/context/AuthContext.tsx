@@ -1,27 +1,28 @@
 import React from "react";
 import { auth, authProvider } from "../utils/firebase";
 
-interface Iuser {
-  name: string | null;
-  email: string | null;
-}
-
 interface IAuthContext {
   children?: JSX.Element;
-  user?: Iuser;
+  uid: string | null | undefined;
+  name: string | null | undefined;
+  email: string | null | undefined;
   token?: string | null;
   signIn: any;
   signOut: any;
 }
 
 export const AuthContext = React.createContext<IAuthContext>({
+  name: null,
+  email: null,
+  uid: null,
   signIn: () => {},
   signOut: () => {},
 });
 
 const AuthProvider: React.FC = ({ children }) => {
-  const [id, setId] = React.useState<string | null>();
-  const [user, setUser] = React.useState<Iuser>();
+  const [name, setName] = React.useState<string | null | undefined>();
+  const [email, setEmail] = React.useState<string | null | undefined>();
+  const [uid, setUid] = React.useState<string | null | undefined>();
   const [token, setToken] = React.useState<string | undefined | null>(
     undefined
   );
@@ -29,10 +30,9 @@ const AuthProvider: React.FC = ({ children }) => {
   const signInWithGoogle = async () => {
     await auth.signInWithPopup(authProvider).then((res) => {
       if (res.user) {
-        setUser({
-          name: res.user.displayName,
-          email: res.user.email,
-        });
+        setName(res.user.displayName);
+        setEmail(res.user.email);
+        setUid(res.user.uid);
         res.user.getIdToken().then((token) => {
           setToken(token);
         });
@@ -42,18 +42,18 @@ const AuthProvider: React.FC = ({ children }) => {
 
   const signOut = async () => {
     await auth.signOut().then(() => {
-      setUser(undefined);
+      setName(null);
+      setEmail(null);
+      setUid(null);
     });
   };
 
-  auth.onAuthStateChanged(async (user) => {
-    if (user && user.uid !== id) {
-      user.getIdToken().then((token) => {
-        setId(user.uid);
-        setUser({
-          name: user.displayName,
-          email: user.email,
-        });
+  auth.onAuthStateChanged(async (newState) => {
+    if (newState && newState.uid !== uid) {
+      newState.getIdToken().then((token) => {
+        setName(newState.displayName);
+        setEmail(newState.email);
+        setUid(newState.uid);
         setToken(token);
       });
     }
@@ -62,7 +62,9 @@ const AuthProvider: React.FC = ({ children }) => {
   return (
     <AuthContext.Provider
       value={{
-        user,
+        name,
+        email,
+        uid,
         token,
         signOut,
         signIn: signInWithGoogle,

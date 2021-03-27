@@ -1,6 +1,6 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import { customAlphabet, nanoid } from "nanoid";
+import { customAlphabet } from "nanoid";
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -8,22 +8,6 @@ const db = admin.firestore();
 const cors = require("cors")({ origin: true });
 
 const createId = customAlphabet("abcdefghijklmnopqrstuvwxyz", 6);
-
-export const getUser = functions.https.onRequest((req, res) => {
-  cors(req, res, async () => {
-    const user = req.body.user;
-    const users = db.collection("users");
-    const doc = await users.doc(user).get();
-    if (doc.exists) {
-      const data = doc.data();
-      res.status(200).send({ ...data });
-    } else {
-      const id = nanoid();
-      await users.doc(user).set({ mail: user, id });
-      res.status(200).send({ id });
-    }
-  });
-});
 
 const checkId = async (id: string) => {
   const hunt = db.collection("hunts").doc(id);
@@ -83,9 +67,9 @@ export const newHunt = functions.https.onRequest((req, res) => {
 
 export const getHunts = functions.https.onRequest((req, res) => {
   cors(req, res, () => {
-    if (!req.body.id)
+    if (!req.body.uid)
       res.status(403).send("Du må logge inn for å administrere påskejakter.");
-    getUserHunts(req.body.id).then(async (data) => {
+    getUserHunts(req.body.uid).then(async (data) => {
       const huntArray = await data.docs.map((doc) => {
         return { huntId: doc.id, ...doc.data() };
       });
@@ -99,16 +83,26 @@ export const getHunt = functions.https.onRequest((req, res) => {
     db.collection("hunts")
       .doc(req.body.huntId)
       .get()
-      .then((hunt) => res.status(200).send(hunt.data()));
+      .then((hunt) =>
+        res.status(200).send({
+          huntId: hunt.id,
+          ...hunt.data(),
+        })
+      );
   });
 });
 
 export const updateHunt = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
-    await db.collection("hunts").doc(req.body.huntId).set({
-      activeDate: req.body.activeDate,
-      name: req.body.name,
-    });
+    const huntId = req.body.huntId;
+    if (!huntId) res.status(404).send(404);
+    await db.collection("hunts").doc(huntId).set(
+      {
+        // activeDate: req.body.activeDate || undefined,
+        name: req.body.name,
+      },
+      { merge: true }
+    );
     res.status(200).send("ok");
   });
 });
@@ -131,6 +125,7 @@ export const deleteHunt = functions.https.onRequest((req, res) => {
 
 export const getTasks = functions.https.onRequest((req, res) => {
   cors(req, res, () => {
+    if (!req.body.huntId) res.status(404).send("Ingen huntId.");
     getHuntTasks(req.body.huntId).then(async (data) => {
       const taskArray = await data.docs
         .sort((a, b) => a.data().date - b.data().date)
@@ -147,7 +142,7 @@ export const newTask = functions.https.onRequest((req, res) => {
     const taskId = createId();
     await db.collection("tasks").doc(taskId).set({
       huntId: req.body.huntId,
-      date: Date.now(),
+      date: new Date(),
     });
     res.status(200).send("ok");
   });

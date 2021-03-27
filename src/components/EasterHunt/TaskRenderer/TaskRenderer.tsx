@@ -1,10 +1,10 @@
 import React from "react";
 import { ITask } from "../../../utils/types";
-import MapComponent from "../../../components/Map/MapComponent";
-import MapDistance from "../../../components/Map/MapDistance";
+import MapComponent from "../../Map/MapComponent";
+import MapDistance from "../../Map/MapDistance";
 import TaskView from "./TaskView";
 import { Card } from "antd";
-import EggMarker from "../../../components/Map/EggMarker";
+import EggMarker from "../../Map/EggMarker";
 
 interface IdistanceValues {
   text: string;
@@ -22,7 +22,7 @@ const TaskRenderer: React.FC<ITaskRenderer> = ({ taskKey, task }) => {
   const [showTask, setShowTask] = React.useState(false);
 
   React.useEffect(() => {
-    if (distance) {
+    if (task.location && distance) {
       const distanceValues = distance.rows[0].elements[0].distance;
       if (distanceValues.value <= 10) {
         setShowTask(true);
@@ -31,6 +31,8 @@ const TaskRenderer: React.FC<ITaskRenderer> = ({ taskKey, task }) => {
         setShowTask(false);
         setDistanceValues(distanceValues);
       }
+    } else {
+      setShowTask(true);
     }
   }, [distance]);
 

@@ -20,7 +20,7 @@ const TaskView: React.FC<ITaskView> = ({ task }) => {
           block
           onClick={() => nextTask()}
         >
-          Gå til neste oppgave
+          Fortsett
         </Button>
       </div>
     </div>
