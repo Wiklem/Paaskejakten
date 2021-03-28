@@ -1,5 +1,5 @@
 import React from "react";
-import { auth, authProvider } from "../utils/firebase";
+import { auth, authProvider } from "../api/firebase/firebase";
 
 interface IAuthContext {
   children?: JSX.Element;

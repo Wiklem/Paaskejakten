@@ -4,22 +4,22 @@ export interface ILocation {
 }
 
 export interface ITask {
-  taskId?: string;
-  type?: string;
+  taskId: string;
+  type: string;
   description: string;
-  correct?: string;
-  location: ILocation;
-  mapHint?: JSX.Element | string;
+  correct: string;
+  location: ILocation | null;
+  mapHint: string;
   alternatives?: Array<string>;
-  cover?: JSX.Element;
-  date: Date;
+  cover: string;
+  date: string;
 }
 
 export interface IHunt {
   name: string;
   huntId: string;
-  activeDate: Date;
-  date: Date;
+  activeDate: string;
+  date: string;
   tasks: Array<ITask>;
   finishTitle: string;
   finishText: string;

@@ -1,12 +1,11 @@
 import React from "react";
 import { IHunt, ILocation, ITask } from "../../utils/types";
 import { Button, Card, Radio, Form, Input, Tooltip } from "antd";
-import axios from "axios";
-import { functionUrl } from "../../utils/api";
 import Loading from "../Loading";
 import { CheckCircleTwoTone, FrownTwoTone } from "@ant-design/icons";
 import MapComponent from "../Map/MapComponent";
 import EggMarker from "../Map/EggMarker";
+import WriteData from "../../api/writeData";
 const { Search } = Input;
 
 interface ITaskEditor {
@@ -14,22 +13,26 @@ interface ITaskEditor {
   task: ITask;
   number: number;
   reload: () => void;
+  deleteTask: (taskId: string) => void;
 }
 
-const TaskEditor: React.FC<ITaskEditor> = ({ number, task, reload }) => {
+const TaskEditor: React.FC<ITaskEditor> = ({
+  number,
+  task,
+  reload,
+  deleteTask,
+}) => {
   const [loading, setLoading] = React.useState(false);
   const [edit, setEdit] = React.useState(false);
   const [description, setDescription] = React.useState<string>(
     task.description
   );
-  const [type, setType] = React.useState<string | undefined>(task.type);
-  const [correct, setCorrect] = React.useState<string | undefined>(
-    task.correct
-  );
+  const [type, setType] = React.useState<string>(task.type);
+  const [correct, setCorrect] = React.useState<string>(task.correct);
   const [alternatives, setAlternatives] = React.useState<Array<string>>(
     task.alternatives || []
   );
-  const [position, setPosition] = React.useState<ILocation | undefined>(
+  const [position, setPosition] = React.useState<ILocation | null>(
     task.location
   );
   const [selectPosition, setSelectPosition] = React.useState(false);
@@ -54,31 +57,26 @@ const TaskEditor: React.FC<ITaskEditor> = ({ number, task, reload }) => {
   React.useEffect(() => {
     checkReady();
   });
-  const deleteTask = () => {
-    setLoading(true);
-    axios
-      .post(functionUrl + "deleteTask", { taskId: task.taskId })
-      .then(() => reload());
-  };
 
   const addAlternative = (value: string) => {
     setAlternatives(alternatives.concat(value));
   };
 
   const saveTask = () => {
-    axios
-      .post(functionUrl + "updateTask", {
-        ...task,
-        description,
-        type,
-        correct,
-        alternatives,
-        location: position,
-      })
+    setLoading(true);
+    WriteData.updateTask(task.taskId, {
+      ...task,
+      description,
+      type,
+      correct,
+      alternatives,
+      location: position,
+    })
       .then(() => {
         setEdit(false);
         reload();
-      });
+      })
+      .finally(() => setLoading(false));
   };
 
   const viewPosition = () => (
@@ -118,7 +116,7 @@ const TaskEditor: React.FC<ITaskEditor> = ({ number, task, reload }) => {
       actions={
         edit
           ? [
-              <Button danger onClick={() => deleteTask()}>
+              <Button danger onClick={() => deleteTask(task.taskId)}>
                 Slett
               </Button>,
               <Button onClick={() => setEdit(!edit)}>Avbryt</Button>,
@@ -140,11 +138,7 @@ const TaskEditor: React.FC<ITaskEditor> = ({ number, task, reload }) => {
           <Button disabled={!edit} onClick={() => setSelectPosition(true)}>
             Velg lokasjon
           </Button>
-          <Button
-            disabled={!edit}
-            danger
-            onClick={() => setPosition(undefined)}
-          >
+          <Button disabled={!edit} danger onClick={() => setPosition(null)}>
             Slett lokasjon
           </Button>
 
@@ -154,7 +148,7 @@ const TaskEditor: React.FC<ITaskEditor> = ({ number, task, reload }) => {
         <Form.Item label="Oppgave tekst">
           <Input
             disabled={!edit}
-            value={description}
+            value={description || ""}
             onChange={(e) => setDescription(e.target.value)}
           />
         </Form.Item>
@@ -163,7 +157,7 @@ const TaskEditor: React.FC<ITaskEditor> = ({ number, task, reload }) => {
             disabled={!edit}
             onChange={(e) => {
               setType(e.target.value);
-              setCorrect(undefined);
+              setCorrect("");
             }}
             value={type}
           >
@@ -176,7 +170,7 @@ const TaskEditor: React.FC<ITaskEditor> = ({ number, task, reload }) => {
           <Form.Item label="Riktig svar">
             <Input
               disabled={!edit}
-              value={correct}
+              value={correct || ""}
               onChange={(e) => setCorrect(e.target.value)}
             />
           </Form.Item>

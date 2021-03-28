@@ -1,17 +1,20 @@
 import React from "react";
 import Loading from "./Loading";
-import { timeDifference } from "./Utils";
 import { Alert } from "antd";
 
 interface ICountdown {
   readyCallback: (state: boolean) => void;
-  time: Date;
+  time: string;
 }
+
+const timeDiff = (time: string) => {
+  return new Date(time).getTime() - new Date().getTime();
+};
 const Countdown: React.FC<ICountdown> = ({ readyCallback, time }) => {
   const [timeLeft, setTimeLeft] = React.useState<any>();
 
   const calculateTimeLeft = () => {
-    const difference = timeDifference(time);
+    const difference = timeDiff(time);
     if (difference <= 0) readyCallback(true);
     return {
       dager: Math.floor(difference / (1000 * 60 * 60 * 24)),

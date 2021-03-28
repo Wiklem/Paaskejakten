@@ -1,7 +1,6 @@
 import React from "react";
 import { Alert, Button, Input, Modal } from "antd";
-import axios from "axios";
-import { functionUrl } from "../../utils/api";
+import WriteData from "../../api/writeData";
 
 interface INewHunt {
   id: string;
@@ -10,26 +9,20 @@ interface INewHunt {
 
 const NewHunt: React.FC<INewHunt> = ({ id, reload }) => {
   const [name, setName] = React.useState("");
-  const [error, setError] = React.useState("");
+  const [error, setError] = React.useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = React.useState(false);
   const [loading, setLoading] = React.useState<boolean>(false);
 
   const handleOk = () => {
     if (name) {
       setLoading(true);
-      axios
-        .post(functionUrl + "newHunt", { id, name })
+      WriteData.newHunt(id, name)
         .then(() => {
-          setLoading(false);
           setIsModalVisible(false);
           reload();
         })
-        .catch((e) => {
-          e.response && e.response.data && setError(e.response.data.message);
-          setLoading(false);
-        });
-    } else {
-      setError("Du må velge et navn!");
+        .catch(() => setError(true))
+        .finally(() => setLoading(false));
     }
   };
 

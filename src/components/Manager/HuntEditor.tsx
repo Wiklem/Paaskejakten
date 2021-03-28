@@ -10,11 +10,11 @@ import {
   Card,
   Popconfirm,
 } from "antd";
-import { functionUrl } from "../../utils/api";
-import axios from "axios";
 import locale from "antd/es/date-picker/locale/nb_NO";
 import TaskEditor from "./TaskEditor";
 import Loading from "../Loading";
+import WriteData from "../../api/writeData";
+import GetData from "../../api/getData";
 const { TextArea } = Input;
 
 interface IEditHunt {
@@ -22,55 +22,59 @@ interface IEditHunt {
   back: () => void;
 }
 
-const EditHunt: React.FC<IEditHunt> = ({ hunt, back }) => {
+const HuntEditor: React.FC<IEditHunt> = ({ hunt, back }) => {
   const [name, setName] = React.useState(hunt.name);
+
   const [activeDate, setActiveDate] = React.useState(hunt.activeDate);
-  const [tasks, setTasks] = React.useState<Array<ITask>>([]);
   const [finishTitle, setFinishTitle] = React.useState<string>(
     hunt.finishTitle
   );
   const [finishText, setFinishText] = React.useState<string>(hunt.finishText);
-  const [reloadState, setReload] = React.useState(Date.now());
-  const [loading, setLoading] = React.useState(true);
 
-  const reload = () => setReload(Date.now());
+  const [data, setData] = React.useState<Array<ITask>>();
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(false);
+  const [reloadKey, setReloadKey] = React.useState(Date.now());
+  const reload = () => setReloadKey(Date.now);
 
   const deleteHunt = () => {
-    setLoading(true);
-    axios
-      .post(functionUrl + "deleteHunt", { huntId: hunt.huntId })
-      .then(() => back());
+    WriteData.deleteHunt(hunt.huntId).then(() => {
+      back();
+      reload();
+    });
   };
 
   const newTask = () => {
     setLoading(true);
-    axios
-      .post(functionUrl + "newTask", { huntId: hunt.huntId })
-      .then(() => reload());
+    WriteData.newTask(hunt.huntId).then(() => reload());
+  };
+
+  const deleteTask = (taskId: string) => {
+    setLoading(true);
+    WriteData.deleteTask(taskId).then(() => {
+      reload();
+    });
   };
 
   const updateHunt = () => {
-    axios
-      .post(functionUrl + "updateHunt", {
-        huntId: hunt.huntId,
-        activeDate,
-        name,
-      })
-      .then(() => reload());
+    WriteData.updateHunt(hunt.huntId, { ...hunt, activeDate, name }).then(() =>
+      reload()
+    );
   };
 
-  const getTasks = () =>
-    axios
-      .post(functionUrl + "getTasks", { huntId: hunt.huntId })
-      .then((res) => {
-        setTasks(res.data);
-        setLoading(false);
-      });
-
   React.useEffect(() => {
-    reloadState && getTasks();
-  }, [reloadState]);
+    if (hunt.huntId) {
+      setLoading(true);
+      GetData.getTasks(hunt.huntId)
+        .then((data: any) => setData(data))
+        .catch(() => {
+          setError(true);
+        })
+        .finally(() => setLoading(false));
+    }
+  }, [hunt.huntId, reloadKey]);
 
+  console.log(activeDate);
   return (
     <div>
       <PageHeader
@@ -79,7 +83,7 @@ const EditHunt: React.FC<IEditHunt> = ({ hunt, back }) => {
         title={name}
         subTitle={
           <>
-            <span> Opprettet: {moment(hunt.date).format("DD.MM.YYYY")}</span>
+            <span>Opprettet: {moment(hunt.date).format("DD.MM.YYYY")}</span>
             <br />
             <span>
               Kode: <strong>{hunt.huntId}</strong>
@@ -119,11 +123,9 @@ const EditHunt: React.FC<IEditHunt> = ({ hunt, back }) => {
           >
             <DatePicker
               locale={locale}
-              value={activeDate && moment(activeDate)}
+              value={activeDate ? moment(activeDate) : null}
               showTime
-              onChange={(date, dateString) =>
-                setActiveDate(new Date(dateString))
-              }
+              onChange={(date, dateString) => setActiveDate(dateString)}
             />
           </Form.Item>
           <Form.Item
@@ -158,11 +160,9 @@ const EditHunt: React.FC<IEditHunt> = ({ hunt, back }) => {
       <div style={{ display: "flex", flexDirection: "column" }}>
         {loading ? (
           <Loading />
-        ) : tasks ? (
-          tasks
-            .sort(
-              (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-            )
+        ) : data ? (
+          data
+            .sort((a, b) => moment(a.date).unix() - moment(b.date).unix())
             .map((task, key) => {
               return (
                 <TaskEditor
@@ -171,6 +171,7 @@ const EditHunt: React.FC<IEditHunt> = ({ hunt, back }) => {
                   huntId={hunt.huntId}
                   task={task}
                   reload={() => reload()}
+                  deleteTask={deleteTask}
                 />
               );
             })
@@ -182,4 +183,4 @@ const EditHunt: React.FC<IEditHunt> = ({ hunt, back }) => {
   );
 };
 
-export default EditHunt;
+export default HuntEditor;
