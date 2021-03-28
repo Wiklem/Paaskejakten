@@ -11,7 +11,7 @@ export interface ITask {
   location: ILocation | null;
   mapHint: string;
   alternatives?: Array<string>;
-  cover: string;
+  image: string;
   date: string;
 }
 

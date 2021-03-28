@@ -16,7 +16,7 @@ interface IManageTasks {
 }
 
 const ManageTasks: React.FC<IManageTasks> = ({ huntId }) => {
-  const [edit, setEdit] = React.useState<ITask | undefined>(undefined);
+  const [editTask, setEditTask] = React.useState<string | undefined>(undefined);
   const [data, setData] = React.useState<Array<ITask>>();
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(false);
@@ -48,13 +48,12 @@ const ManageTasks: React.FC<IManageTasks> = ({ huntId }) => {
     }
   }, [huntId, reloadKey]);
 
-  if (edit) {
+  if (editTask) {
     return (
       <TaskEditor
-        number={100}
-        task={edit}
-        back={() => setEdit(undefined)}
-        reload={() => reload()}
+        huntId={huntId}
+        taskId={editTask}
+        back={() => setEditTask(undefined)}
         deleteTask={deleteTask}
       />
     );
@@ -63,6 +62,7 @@ const ManageTasks: React.FC<IManageTasks> = ({ huntId }) => {
   const viewTask = (number: number, ready: boolean, task: ITask) => {
     return (
       <Card
+        key={number}
         title={"Oppgave " + number}
         extra={
           ready ? (
@@ -75,7 +75,9 @@ const ManageTasks: React.FC<IManageTasks> = ({ huntId }) => {
             </Tooltip>
           )
         }
-        actions={[<Button onClick={() => setEdit(task)}>Endre</Button>]}
+        actions={[
+          <Button onClick={() => setEditTask(task.taskId)}>Endre</Button>,
+        ]}
         style={{ marginTop: 10 }}
       >
         <div>
@@ -105,7 +107,7 @@ const ManageTasks: React.FC<IManageTasks> = ({ huntId }) => {
           data
             .sort((a, b) => moment(a.date).unix() - moment(b.date).unix())
             .map((task, key) => {
-              return viewTask(key, true, task);
+              return viewTask(key + 1, true, task);
             })
         ) : (
           "Det er ingen oppgaver i denne påskejakten"

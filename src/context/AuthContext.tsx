@@ -1,5 +1,9 @@
 import React from "react";
-import { auth, authProvider } from "../api/firebase/firebase";
+import {
+  auth,
+  facebookAuthProvider,
+  googleAuthProvider,
+} from "../api/firebase/firebase";
 
 interface IAuthContext {
   children?: JSX.Element;
@@ -27,8 +31,31 @@ const AuthProvider: React.FC = ({ children }) => {
     undefined
   );
 
+  const signIn = async (type: string) => {
+    if (type === "GOOGLE") {
+      await signInWithGoogle();
+    }
+    if (type === "FACEBOOK") {
+      await signInWIthFacebook();
+    }
+  };
+
+  const signInWIthFacebook = async () => {
+    await auth.signInWithPopup(facebookAuthProvider).then((res) => {
+      console.log(res);
+      if (res.user) {
+        setName(res.user.displayName);
+        setEmail(res.user.email);
+        setUid(res.user.uid);
+        res.user.getIdToken().then((token) => {
+          setToken(token);
+        });
+      }
+    });
+  };
+
   const signInWithGoogle = async () => {
-    await auth.signInWithPopup(authProvider).then((res) => {
+    await auth.signInWithPopup(googleAuthProvider).then((res) => {
       if (res.user) {
         setName(res.user.displayName);
         setEmail(res.user.email);
@@ -67,7 +94,7 @@ const AuthProvider: React.FC = ({ children }) => {
         uid,
         token,
         signOut,
-        signIn: signInWithGoogle,
+        signIn,
       }}
     >
       {children}

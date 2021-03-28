@@ -9,6 +9,7 @@ import Hunt from "../../routes/Hunt";
 import EasterContextProvider from "../../context/EasterContext";
 import Help from "../../routes/Help";
 import { Col, Row } from "antd";
+import Login from "../../routes/Login";
 
 interface ILayout {}
 
@@ -32,6 +33,9 @@ const Layout: React.FC<ILayout> = () => {
                     <EasterContextProvider>
                       <Manager />
                     </EasterContextProvider>
+                  </Route>
+                  <Route path={"/login"}>
+                    <Login />
                   </Route>
                   <Route path={"/jakt/:id"}>
                     <EasterContextProvider>

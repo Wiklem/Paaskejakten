@@ -9,7 +9,7 @@ import { useLocation } from "react-router-dom";
 
 const Header: React.FC = () => {
   const location = useLocation();
-  const { uid, signIn, signOut } = React.useContext(AuthContext);
+  const { uid, signOut } = React.useContext(AuthContext);
 
   if (location.pathname.includes("/jakt/")) return null;
   return (
@@ -32,9 +32,9 @@ const Header: React.FC = () => {
               </Button>
             </>
           ) : (
-            <Button icon={<LoginOutlined />} onClick={signIn}>
-              Administrer påskejakt
-            </Button>
+            <Link to={"/login"}>
+              <Button icon={<LoginOutlined />}>Administrer påskejakt</Button>
+            </Link>
           )
         }
       />

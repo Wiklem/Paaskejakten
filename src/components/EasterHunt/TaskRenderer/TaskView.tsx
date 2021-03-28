@@ -35,10 +35,27 @@ const TaskView: React.FC<ITaskView> = ({ task, nextStep }) => {
 
   const inputOptions = () =>
     task.type === "flervalg" ? (
-      <Radio.Group onChange={(e) => setAnswer(e.target.value)} value={answer}>
-        {task.alternatives &&
-          task.alternatives.map((a) => <Radio value={a}>{a}</Radio>)}
-      </Radio.Group>
+      <>
+        Trykk på riktig alternativ:
+        <br />
+        <Radio.Group onChange={(e) => setAnswer(e.target.value)} value={answer}>
+          {task.alternatives &&
+            task.alternatives.map((a, key) => (
+              <Radio.Button
+                key={key}
+                style={{
+                  margin: "10px",
+                  display: "block",
+                  height: "30px",
+                  lineHeight: "30px",
+                }}
+                value={a}
+              >
+                {a}
+              </Radio.Button>
+            ))}
+        </Radio.Group>
+      </>
     ) : (
       <Input.Search
         allowClear
@@ -51,7 +68,8 @@ const TaskView: React.FC<ITaskView> = ({ task, nextStep }) => {
 
   return (
     <>
-      <strong>{task.description}</strong>
+      Spørsmål: <strong>{task.description}</strong>
+      <br />
       {inputOptions()}
       {answer !== undefined
         ? answer.toLowerCase() === task.correct?.toLowerCase()

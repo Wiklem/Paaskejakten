@@ -2,102 +2,266 @@ import React from "react";
 import { ILocation, ITask } from "../../utils/types";
 import { Button, Card, Radio, Form, Input, Tooltip } from "antd";
 import Loading from "../Loading";
-import { CheckCircleTwoTone, FrownTwoTone } from "@ant-design/icons";
+import {
+  CheckCircleTwoTone,
+  DeleteOutlined,
+  FrownTwoTone,
+} from "@ant-design/icons";
 import MapComponent from "../Map/MapComponent";
 import EggMarker from "../Map/EggMarker";
 import WriteData from "../../api/writeData";
 import ViewPosition from "../EasterHunt/ViewPosition";
+import TaskImageEditor from "./TaskImageEditor";
+import GetData from "../../api/getData";
+import Error from "../Error";
 const { Search } = Input;
 
 interface ITaskEditor {
-  task: ITask;
-  number: number;
-  reload: () => void;
+  huntId: string;
+  taskId: string;
   back: () => void;
   deleteTask: (taskId: string) => void;
 }
 
 const TaskEditor: React.FC<ITaskEditor> = ({
-  number,
-  task,
-  reload,
+  huntId,
+  taskId,
   deleteTask,
   back,
 }) => {
   const [loading, setLoading] = React.useState(false);
-  const [description, setDescription] = React.useState<string>(
-    task.description
-  );
-  const [type, setType] = React.useState<string>(task.type);
-  const [correct, setCorrect] = React.useState<string>(task.correct);
-  const [alternatives, setAlternatives] = React.useState<Array<string>>(
-    task.alternatives || []
-  );
-  const [position, setPosition] = React.useState<ILocation | null>(
-    task.location
-  );
+  const [alternativeValue, setAlternativeValue] = React.useState<string>("");
+
+  const [task, setTask] = React.useState<ITask>();
+  const [originTask, setOriginTask] = React.useState<ITask>();
+
+  const [error, setError] = React.useState(false);
+
+  const [reloadKey, setReloadKey] = React.useState(Date.now());
+  const reload = () => setReloadKey(Date.now);
+
   const [selectPosition, setSelectPosition] = React.useState(false);
   const [ready, setReady] = React.useState(false);
 
-  const checkReady = () => {
-    const check = correct && description;
-
-    if (type === "flervalg" && check) {
-      return alternatives.length > 1 && setReady(true);
-    } else if (type) {
-      return setReady(true);
-    } else {
-      return setReady(false);
+  React.useEffect(() => {
+    if (taskId) {
+      setLoading(true);
+      GetData.getTask(taskId)
+        .then((data: any) => {
+          setOriginTask(data);
+          setTask(data);
+          setReady(checkReady(data));
+        })
+        .catch(() => {
+          setError(true);
+        })
+        .finally(() => setLoading(false));
     }
+  }, [taskId, reloadKey]);
+
+  const handleChange = (e: any) => {
+    const target = e.target;
+    const value = target.value;
+    const name = target.name;
+
+    //@ts-ignore
+    setTask({ ...task, [name]: value });
+  };
+
+  const checkReady = (task: ITask): boolean => {
+    if (!task) return false;
+    console.log("Sjekker");
+    const check = task.correct !== undefined && task.description !== undefined;
+    if (task.type === "flervalg" && check) {
+      if (task.alternatives && task.alternatives.length) {
+        return true;
+      }
+    } else if (task.type) {
+      return true;
+    } else {
+      return false;
+    }
+    return false;
   };
 
   const positionCallback = (position: ILocation) => {
-    setPosition(position);
+    // @ts-ignore
+    setTask({ ...task, location: position });
   };
 
-  React.useEffect(() => {
-    checkReady();
-  });
+  const alternativeEqual = () => {
+    if (originTask && task) {
+      const equals =
+        JSON.stringify(originTask.alternatives) ===
+        JSON.stringify(task.alternatives);
+      const correct = originTask.correct === task.correct;
+      return equals && correct;
+    }
+  };
 
   const addAlternative = (value: string) => {
-    setAlternatives(alternatives.concat(value));
+    let newAlternatives =
+      (task && task.alternatives && task.alternatives.concat(value)) || [];
+    //@ts-ignore
+    setTask({ ...task, alternatives: newAlternatives });
   };
 
-  const saveTask = () => {
-    setLoading(true);
-    WriteData.updateTask(task.taskId, {
-      ...task,
-      description,
-      type,
-      correct,
-      alternatives,
-      location: position,
-    })
+  const removeAlternative = (value: string) => {
+    let newAlternatives =
+      task &&
+      task.alternatives &&
+      task.alternatives.filter((target) => target !== value);
+    //@ts-ignore
+    setTask({ ...task, alternatives: newAlternatives });
+  };
+
+  const saveTaskData = (changes: ITask) => {
+    WriteData.updateTask(taskId, changes)
       .then(() => {
         reload();
       })
+      .catch((e) => console.log(e))
       .finally(() => setLoading(false));
   };
 
-  if (loading) return <Loading />;
+  const saveChangesButton = (key: string) => {
+    // @ts-ignore
+    if (originTask && task && originTask[key] === task[key]) return null;
+    // @ts-ignore
+    return (
+      <>
+        <br />
+        <Button
+          block
+          type={"primary"}
+          // @ts-ignore
+          onClick={() => saveTaskData({ [key]: task[key] })}
+        >
+          Lagre endring
+        </Button>
+      </>
+    );
+  };
+
+  if (loading || !task) return <Loading />;
+
+  if (error) return <Error />;
+
   if (selectPosition)
     return (
       <div>
-        <Button block type={"primary"} onClick={() => setSelectPosition(false)}>
-          Lukk kart
+        <Button
+          block
+          type={"primary"}
+          onClick={() => {
+            setSelectPosition(false);
+            // @ts-ignore
+            saveTaskData({ location: task.location });
+          }}
+        >
+          Lagre posisjon
         </Button>
         <Card>
-          <ViewPosition position={position} />
+          <ViewPosition position={task.location} />
         </Card>
         <MapComponent locationCallback={positionCallback}>
-          {position && <EggMarker location={position} />}
+          {task.location && <EggMarker location={task.location} />}
         </MapComponent>
       </div>
     );
 
-  const editTask = () => {
+  const editView = () => {
     return (
       <Form layout="vertical">
+        <Form.Item label="Oppgave tekst">
+          <Input
+            name={"description"}
+            value={task.description || ""}
+            onChange={(e) => handleChange(e)}
+          />
+          {saveChangesButton("description")}
+        </Form.Item>
+        <Form.Item label="Oppgave type">
+          <Radio.Group
+            name={"type"}
+            onChange={(e) => handleChange(e)}
+            value={task.type}
+          >
+            <Radio value={"tekst"}>Tekst svar</Radio>
+            <Radio value={"flervalg"}>Flervalgsoppgave</Radio>
+          </Radio.Group>
+          {saveChangesButton("type")}
+        </Form.Item>
+
+        {originTask && originTask.type === "tekst" && (
+          <Form.Item label="Riktig svar">
+            <Input
+              name={"correct"}
+              value={task.correct || ""}
+              onChange={(e) => handleChange(e)}
+            />
+            {saveChangesButton("correct")}
+          </Form.Item>
+        )}
+
+        {originTask && originTask.type === "flervalg" && (
+          <>
+            <Form.Item label="Alternativer">
+              <Search
+                placeholder="Nytt alternativ"
+                allowClear
+                value={alternativeValue}
+                onChange={(e) => setAlternativeValue(e.target.value)}
+                enterButton="Legg til"
+                onSearch={(verdi) => {
+                  setAlternativeValue("");
+                  addAlternative(verdi);
+                }}
+              />
+
+              {task.alternatives &&
+                task.alternatives.map((a) => (
+                  <div>
+                    {task.correct !== a && (
+                      <Button onClick={() => removeAlternative(a)}>
+                        <DeleteOutlined />
+                      </Button>
+                    )}
+
+                    <Button onClick={() => setTask({ ...task, correct: a })}>
+                      {a}
+                    </Button>
+                    {task.correct === a && (
+                      <>
+                        <CheckCircleTwoTone twoToneColor="#52c41a" /> Valgt som
+                        riktig svar{" "}
+                      </>
+                    )}
+                  </div>
+                ))}
+              {!alternativeEqual() && (
+                <>
+                  <br />
+                  <Button
+                    block
+                    type={"primary"}
+                    onClick={() =>
+                      //@ts-ignore
+                      saveTaskData({
+                        type: task.type,
+                        alternatives: task.alternatives,
+                        correct: task.correct,
+                      })
+                    }
+                  >
+                    Lagre endring
+                  </Button>
+                </>
+              )}
+            </Form.Item>
+          </>
+        )}
+        <hr />
         <Form.Item
           label="Oppgave lokasjon"
           tooltip={
@@ -105,76 +269,30 @@ const TaskEditor: React.FC<ITaskEditor> = ({
           }
         >
           <Button onClick={() => setSelectPosition(true)}>Velg lokasjon</Button>
-          <Button danger onClick={() => setPosition(null)}>
+          {/*//@ts-ignore*/}
+          <Button danger onClick={() => saveTaskData({ location: null })}>
             Slett lokasjon
           </Button>
 
-          <br />
-          <ViewPosition position={position} />
+          <ViewPosition position={task.location} />
         </Form.Item>
-        <Form.Item label="Oppgave tekst">
-          <Input
-            value={description || ""}
-            onChange={(e) => setDescription(e.target.value)}
+        <hr />
+        <Form.Item label="Oppgave bilde">
+          <TaskImageEditor
+            huntId={huntId}
+            taskId={task.taskId}
+            image={task.image}
+            // @ts-ignore
+            setImage={(imageUrl: string) => saveTaskData({ image: imageUrl })}
           />
         </Form.Item>
-        <Form.Item label="Oppgave type">
-          <Radio.Group
-            onChange={(e) => {
-              setType(e.target.value);
-              setCorrect("");
-            }}
-            value={type}
-          >
-            <Radio value={"tekst"}>Tekst svar</Radio>
-            <Radio value={"flervalg"}>Flervalgsoppgave</Radio>
-          </Radio.Group>
-        </Form.Item>
-
-        {type === "tekst" && (
-          <Form.Item label="Riktig svar">
-            <Input
-              value={correct || ""}
-              onChange={(e) => setCorrect(e.target.value)}
-            />
-          </Form.Item>
-        )}
-
-        {type === "flervalg" && (
-          <>
-            <Form.Item label="Alternativer">
-              <Search
-                placeholder="Nytt alternativ"
-                allowClear
-                enterButton="Legg til"
-                onSearch={(verdi) => addAlternative(verdi)}
-              />
-              <Radio.Group
-                defaultValue="a"
-                size="large"
-                onChange={(e) => setCorrect(e.target.value)}
-              >
-                {alternatives.map((a) => (
-                  <Radio.Button value={a}>{a}</Radio.Button>
-                ))}
-              </Radio.Group>
-            </Form.Item>
-            <Form.Item label="Riktig svar:">
-              {correct ? (
-                <span>{correct}</span>
-              ) : (
-                "Riktig svar ikke valgt. Trykk på et av alternativene"
-              )}
-            </Form.Item>
-          </>
-        )}
       </Form>
     );
   };
 
   return (
     <Card
-      title={"Oppgave " + number}
+      title={"Oppgave info"}
       extra={
         ready ? (
           <Tooltip title="Oppgaven er klar">
@@ -188,16 +306,16 @@ const TaskEditor: React.FC<ITaskEditor> = ({
       }
       actions={[
         <Button danger onClick={() => deleteTask(task.taskId)}>
-          Slett
+          Slett oppgave
         </Button>,
-        <Button onClick={() => back()}>Avbryt</Button>,
-        <Button onClick={() => saveTask()} type="primary">
-          Lagre
-        </Button>,
+        <Button onClick={() => back()}>Ferdig</Button>,
+        // <Button onClick={() => saveTask()} type="primary">
+        //   Lagre
+        // </Button>,
       ]}
       style={{ marginTop: 10 }}
     >
-      {editTask()}
+      {editView()}
     </Card>
   );
 };

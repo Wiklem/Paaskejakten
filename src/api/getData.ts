@@ -31,6 +31,14 @@ const getHuntTasks = async (huntId: string) => {
   return await huntRef.where("huntId", "==", huntId).get();
 };
 
+const getTask = async (taskId: string) => {
+  return await db
+    .collection("tasks")
+    .doc(taskId)
+    .get()
+    .then((doc) => doc.data());
+};
+
 const getTasks = (huntId: string) => {
   return getHuntTasks(huntId).then((data) => {
     return data.docs
@@ -46,6 +54,7 @@ const getTasks = (huntId: string) => {
 };
 
 const GetData = {
+  getTask,
   getTasks,
   getHunts,
   getHunt,
