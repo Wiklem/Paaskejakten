@@ -58,6 +58,13 @@ const updateTask = (taskId: string, data: ITask) => {
   return db.collection("tasks").doc(taskId).set(data, { merge: true });
 };
 
+const sendMessage = (mail: string, message: string, email: string) => {
+  return db.collection("meldinger").doc(mail).set({
+    email,
+    message,
+  });
+};
+
 const WriteData = {
   newHunt,
   updateHunt,
@@ -65,6 +72,7 @@ const WriteData = {
   deleteTask,
   newTask,
   updateTask,
+  sendMessage,
 };
 
 export default WriteData;

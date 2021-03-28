@@ -10,6 +10,8 @@ import EasterContextProvider from "../../context/EasterContext";
 import Help from "../../routes/Help";
 import { Col, Row } from "antd";
 import Login from "../../routes/Login";
+import Privacy from "../../routes/Privacy";
+import Contact from "../../routes/Contact";
 
 interface ILayout {}
 
@@ -44,6 +46,12 @@ const Layout: React.FC<ILayout> = () => {
                   </Route>
                   <Route path={"/hjelp"}>
                     <Help />
+                  </Route>
+                  <Route path={"/privacy"}>
+                    <Privacy />
+                  </Route>
+                  <Route path={"/kontakt"}>
+                    <Contact />
                   </Route>
                   <Route path={"/"}>
                     <Landingpage />
