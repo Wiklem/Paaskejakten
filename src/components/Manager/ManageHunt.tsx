@@ -1,0 +1,70 @@
+import * as React from "react";
+import { PageHeader, Tabs } from "antd";
+import moment from "moment";
+import { useHistory } from "react-router-dom";
+import GetData from "../../api/getData";
+import { IHunt } from "../../utils/types";
+import Loading from "../Loading";
+import Error from "../Error";
+import HuntEditor from "./HuntEditor";
+import ManageTasks from "./ManageTasks";
+
+const { TabPane } = Tabs;
+interface IManageHunt {
+  huntId: string;
+}
+
+const ManageHunt: React.FC<IManageHunt> = ({ huntId }) => {
+  let history = useHistory();
+
+  const [data, setData] = React.useState<IHunt>();
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(false);
+
+  const [reloadKey, setReloadKey] = React.useState(Date.now());
+  const reload = () => setReloadKey(Date.now);
+
+  React.useEffect(() => {
+    if (huntId) {
+      GetData.getHunt(huntId)
+        .then((data: any) => setData(data))
+        .catch(() => {
+          setError(true);
+        })
+        .finally(() => setLoading(false));
+    }
+  }, [huntId, reloadKey]);
+
+  if (loading) return <Loading />;
+  if (error || !data) return <Error />;
+
+  return (
+    <div>
+      <PageHeader
+        style={{ backgroundColor: "white", paddingTop: 0 }}
+        onBack={() => history.push("/administrer")}
+        title={data.name}
+        subTitle={
+          <>
+            <br />
+            <span>Opprettet: {moment(data.date).format("DD.MM.YYYY")}</span>
+            <br />
+            <span>
+              Kode: <strong>{data.huntId}</strong>
+            </span>
+          </>
+        }
+      />
+      <Tabs defaultActiveKey="1">
+        <TabPane tab="Endre Jakt" key="1">
+          <HuntEditor hunt={data} reload={() => reload()} />
+        </TabPane>
+        <TabPane tab="Endre Oppgaver" key="2">
+          <ManageTasks huntId={huntId} />
+        </TabPane>
+      </Tabs>
+    </div>
+  );
+};
+
+export default ManageHunt;

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Card } from "antd";
+import { Button, Card } from "antd";
 import { IHunt } from "../../utils/types";
 
 interface IFinishCard {
@@ -8,7 +8,19 @@ interface IFinishCard {
 
 const FinishCard: React.FC<IFinishCard> = ({ hunt }) => {
   return (
-    <Card title={hunt.finishTitle}>
+    <Card
+      title={hunt.finishTitle}
+      actions={[
+        <Button
+          onClick={() => {
+            localStorage.setItem(hunt.huntId, "1");
+            window.location.reload();
+          }}
+        >
+          Restart
+        </Button>,
+      ]}
+    >
       <p>{hunt.finishText}</p>
     </Card>
   );

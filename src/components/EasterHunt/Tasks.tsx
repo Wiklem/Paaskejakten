@@ -1,7 +1,6 @@
 import * as React from "react";
 import { IHunt, ITask } from "../../utils/types";
 import TaskRenderer from "./TaskRenderer/TaskRenderer";
-import { EasterContext } from "../../context/EasterContext";
 import FinishCard from "./FinishCard";
 import Loading from "../Loading";
 import { Button, Card, Result } from "antd";
@@ -13,13 +12,27 @@ interface ITasks {
 }
 
 const Tasks: React.FC<ITasks> = ({ hunt }) => {
-  const { step } = React.useContext(EasterContext);
+  const [step, setStep] = React.useState<number>();
 
   const [data, setData] = React.useState<Array<ITask>>();
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(false);
 
+  const nextStep = () => {
+    const nextStep = (step && step + 1) || 1;
+    localStorage.setItem(hunt.huntId, nextStep.toString());
+    setStep(nextStep);
+  };
+
   React.useEffect(() => {
+    if (!step) {
+      const storedStep = localStorage.getItem(hunt.huntId);
+      if (storedStep && parseInt(storedStep)) {
+        setStep(parseInt(storedStep));
+      } else {
+        setStep(1);
+      }
+    }
     if (hunt.huntId) {
       setLoading(true);
       GetData.getTasks(hunt.huntId)
@@ -29,7 +42,7 @@ const Tasks: React.FC<ITasks> = ({ hunt }) => {
         })
         .finally(() => setLoading(false));
     }
-  }, [hunt.huntId]);
+  }, [hunt.huntId, step]);
 
   const availableTasks =
     data &&
@@ -60,7 +73,14 @@ const Tasks: React.FC<ITasks> = ({ hunt }) => {
       {availableTasks ? (
         availableTasks.map((task: ITask, key: number) => {
           if (key + 1 === step) {
-            return <TaskRenderer key={key} task={task} taskKey={key} />;
+            return (
+              <TaskRenderer
+                nextStep={nextStep}
+                key={key}
+                task={task}
+                taskKey={key}
+              />
+            );
           }
           return null;
         })

@@ -1,28 +1,17 @@
 import React from "react";
-import { IHunt, ITask } from "../../utils/types";
+import { IHunt } from "../../utils/types";
 import moment from "moment";
-import {
-  PageHeader,
-  Form,
-  Input,
-  Button,
-  DatePicker,
-  Card,
-  Popconfirm,
-} from "antd";
+import { Form, Input, Button, DatePicker, Card, Popconfirm } from "antd";
 import locale from "antd/es/date-picker/locale/nb_NO";
-import TaskEditor from "./TaskEditor";
-import Loading from "../Loading";
 import WriteData from "../../api/writeData";
-import GetData from "../../api/getData";
 const { TextArea } = Input;
 
 interface IEditHunt {
   hunt: IHunt;
-  back: () => void;
+  reload: () => void;
 }
 
-const HuntEditor: React.FC<IEditHunt> = ({ hunt, back }) => {
+const HuntEditor: React.FC<IEditHunt> = ({ hunt, reload }) => {
   const [name, setName] = React.useState(hunt.name);
 
   const [activeDate, setActiveDate] = React.useState(hunt.activeDate);
@@ -31,26 +20,8 @@ const HuntEditor: React.FC<IEditHunt> = ({ hunt, back }) => {
   );
   const [finishText, setFinishText] = React.useState<string>(hunt.finishText);
 
-  const [data, setData] = React.useState<Array<ITask>>();
-  const [loading, setLoading] = React.useState(true);
-  const [reloadKey, setReloadKey] = React.useState(Date.now());
-  const reload = () => setReloadKey(Date.now);
-
   const deleteHunt = () => {
     WriteData.deleteHunt(hunt.huntId).then(() => {
-      back();
-      reload();
-    });
-  };
-
-  const newTask = () => {
-    setLoading(true);
-    WriteData.newTask(hunt.huntId).then(() => reload());
-  };
-
-  const deleteTask = (taskId: string) => {
-    setLoading(true);
-    WriteData.deleteTask(taskId).then(() => {
       reload();
     });
   };
@@ -61,32 +32,8 @@ const HuntEditor: React.FC<IEditHunt> = ({ hunt, back }) => {
     );
   };
 
-  React.useEffect(() => {
-    if (hunt.huntId) {
-      setLoading(true);
-      GetData.getTasks(hunt.huntId)
-        .then((data: any) => setData(data))
-        .finally(() => setLoading(false));
-    }
-  }, [hunt.huntId, reloadKey]);
-
   return (
     <div>
-      <PageHeader
-        style={{ backgroundColor: "white" }}
-        onBack={() => back()}
-        title={name}
-        subTitle={
-          <>
-            <br />
-            <span>Opprettet: {moment(hunt.date).format("DD.MM.YYYY")}</span>
-            <br />
-            <span>
-              Kode: <strong>{hunt.huntId}</strong>
-            </span>
-          </>
-        }
-      />
       <Card
         actions={[
           <Popconfirm
@@ -96,9 +43,7 @@ const HuntEditor: React.FC<IEditHunt> = ({ hunt, back }) => {
             okText="Ja"
             cancelText="Nei"
           >
-            <Button danger loading={loading}>
-              Slett påskejakten
-            </Button>
+            <Button danger>Slett</Button>
           </Popconfirm>,
           <Button onClick={() => updateHunt()}>Lagre</Button>,
         ]}
@@ -146,35 +91,6 @@ const HuntEditor: React.FC<IEditHunt> = ({ hunt, back }) => {
           </Form.Item>
         </Form>
       </Card>
-      <div
-        style={{ display: "flex", justifyContent: "center", marginTop: "10px" }}
-      >
-        <Button type={"primary"} onClick={() => newTask()}>
-          Ny Oppgave
-        </Button>
-      </div>
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        {loading ? (
-          <Loading />
-        ) : data ? (
-          data
-            .sort((a, b) => moment(a.date).unix() - moment(b.date).unix())
-            .map((task, key) => {
-              return (
-                <TaskEditor
-                  number={key + 1}
-                  key={key}
-                  huntId={hunt.huntId}
-                  task={task}
-                  reload={() => reload()}
-                  deleteTask={deleteTask}
-                />
-              );
-            })
-        ) : (
-          "Det er ingen oppgaver i denne påskejakten"
-        )}
-      </div>
     </div>
   );
 };

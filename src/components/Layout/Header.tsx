@@ -5,11 +5,13 @@ import { Link } from "react-router-dom";
 import logo from "../../assets/logo.png";
 import { EditOutlined, LoginOutlined, LogoutOutlined } from "@ant-design/icons";
 import { AuthContext } from "../../context/AuthContext";
+import { useLocation } from "react-router-dom";
 
-interface IHeader {}
-
-const Header: React.FC<IHeader> = () => {
+const Header: React.FC = () => {
+  const location = useLocation();
   const { uid, signIn, signOut } = React.useContext(AuthContext);
+
+  if (location.pathname.includes("/jakt/")) return null;
   return (
     <div className={styles.header}>
       <PageHeader

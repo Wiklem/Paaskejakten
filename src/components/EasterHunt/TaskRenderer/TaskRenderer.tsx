@@ -14,9 +14,10 @@ interface IdistanceValues {
 interface ITaskRenderer {
   task: ITask;
   taskKey: number;
+  nextStep: () => void;
 }
 
-const TaskRenderer: React.FC<ITaskRenderer> = ({ taskKey, task }) => {
+const TaskRenderer: React.FC<ITaskRenderer> = ({ taskKey, task, nextStep }) => {
   const [distanceValues, setDistanceValues] = React.useState<IdistanceValues>();
   const [distance, setDistance] = React.useState<any>();
   const [showTask, setShowTask] = React.useState(false);
@@ -55,7 +56,7 @@ const TaskRenderer: React.FC<ITaskRenderer> = ({ taskKey, task }) => {
   return (
     <Card title={<strong>Oppgave {taskKey + 1}</strong>} cover={task.cover}>
       {showTask || !task.location ? (
-        <TaskView task={task} />
+        <TaskView task={task} nextStep={nextStep} />
       ) : (
         <>
           {distanceToUnlock()} {renderMap()}

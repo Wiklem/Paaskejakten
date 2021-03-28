@@ -1,15 +1,21 @@
 import * as React from "react";
 import { List, Button, Skeleton, Result, message } from "antd";
+import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import Loading from "../components/Loading";
 import NewHunt from "../components/Manager/NewHunt";
 import { IHunt } from "../utils/types";
-import HuntEditor from "../components/Manager/HuntEditor";
 import { ShareAltOutlined } from "@ant-design/icons";
 import GetData from "../api/getData";
+import { useParams } from "react-router-dom";
+import ManageHunt from "../components/Manager/ManageHunt";
 
-const ManageHunt: React.FC = () => {
-  const [edit, setEdit] = React.useState<IHunt>();
+interface Param {
+  id: string;
+}
+
+const Manager: React.FC = () => {
+  const { id } = useParams<Param>();
   const { uid } = React.useContext(AuthContext);
 
   const [data, setData] = React.useState<Array<IHunt>>();
@@ -38,16 +44,7 @@ const ManageHunt: React.FC = () => {
         subTitle={"Du må logge inn for å administrere påskejakter."}
       />
     );
-  if (edit)
-    return (
-      <HuntEditor
-        hunt={edit}
-        back={() => {
-          setEdit(undefined);
-          reload();
-        }}
-      />
-    );
+  if (id) return <ManageHunt huntId={id} />;
   return (
     <>
       {uid && <NewHunt id={uid} reload={() => reload()} />}
@@ -61,8 +58,20 @@ const ManageHunt: React.FC = () => {
           <List.Item
             style={{ backgroundColor: "white" }}
             actions={[
-              <Button key="list-loadmore-edit" onClick={() => setEdit(item)}>
-                Endre
+              <Link to={"/administrer/" + item.huntId}>
+                <Button key="list-loadmore-edit">Endre</Button>
+              </Link>,
+              <Button
+                key="list-loadmore-edit"
+                icon={<ShareAltOutlined />}
+                onClick={() => {
+                  message.success("Lenke til jakt kopiert");
+                  navigator.clipboard.writeText(
+                    "https://påskejakten.no/jakt/" + item.huntId
+                  );
+                }}
+              >
+                Del
               </Button>,
             ]}
           >
@@ -70,16 +79,6 @@ const ManageHunt: React.FC = () => {
               <List.Item.Meta
                 title={item.name}
                 description={"Spillkode: " + item.huntId}
-                avatar={
-                  <ShareAltOutlined
-                    onClick={() => {
-                      message.success("Lenke til jakt kopiert");
-                      navigator.clipboard.writeText(
-                        "https://påskejakten.no/jakt/" + item.huntId
-                      );
-                    }}
-                  />
-                }
               />
             </Skeleton>
           </List.Item>
@@ -89,4 +88,4 @@ const ManageHunt: React.FC = () => {
   );
 };
 
-export default ManageHunt;
+export default Manager;

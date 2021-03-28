@@ -1,18 +1,19 @@
 import React from "react";
-import { IHunt, ILocation, ITask } from "../../utils/types";
+import { ILocation, ITask } from "../../utils/types";
 import { Button, Card, Radio, Form, Input, Tooltip } from "antd";
 import Loading from "../Loading";
 import { CheckCircleTwoTone, FrownTwoTone } from "@ant-design/icons";
 import MapComponent from "../Map/MapComponent";
 import EggMarker from "../Map/EggMarker";
 import WriteData from "../../api/writeData";
+import ViewPosition from "../EasterHunt/ViewPosition";
 const { Search } = Input;
 
 interface ITaskEditor {
-  huntId: IHunt["huntId"];
   task: ITask;
   number: number;
   reload: () => void;
+  back: () => void;
   deleteTask: (taskId: string) => void;
 }
 
@@ -21,9 +22,9 @@ const TaskEditor: React.FC<ITaskEditor> = ({
   task,
   reload,
   deleteTask,
+  back,
 }) => {
   const [loading, setLoading] = React.useState(false);
-  const [edit, setEdit] = React.useState(false);
   const [description, setDescription] = React.useState<string>(
     task.description
   );
@@ -73,18 +74,11 @@ const TaskEditor: React.FC<ITaskEditor> = ({
       location: position,
     })
       .then(() => {
-        setEdit(false);
         reload();
       })
       .finally(() => setLoading(false));
   };
 
-  const viewPosition = () => (
-    <>
-      <span> Latitude: {(position && position.lat) || "N/A"} </span>
-      <span> Longitute: {(position && position.lng) || "N/A"} </span>
-    </>
-  );
   if (loading) return <Loading />;
   if (selectPosition)
     return (
@@ -92,42 +86,17 @@ const TaskEditor: React.FC<ITaskEditor> = ({
         <Button block type={"primary"} onClick={() => setSelectPosition(false)}>
           Lukk kart
         </Button>
-        <Card> {viewPosition()} </Card>
+        <Card>
+          <ViewPosition position={position} />
+        </Card>
         <MapComponent locationCallback={positionCallback}>
           {position && <EggMarker location={position} />}
         </MapComponent>
       </div>
     );
 
-  return (
-    <Card
-      title={"Oppgave " + number}
-      extra={
-        ready ? (
-          <Tooltip title="Oppgaven er klar">
-            <CheckCircleTwoTone twoToneColor="#52c41a" />
-          </Tooltip>
-        ) : (
-          <Tooltip title="Oppgaven er ufulstendig og vil ikke vises i jakten">
-            <FrownTwoTone twoToneColor={"red"} />
-          </Tooltip>
-        )
-      }
-      actions={
-        edit
-          ? [
-              <Button danger onClick={() => deleteTask(task.taskId)}>
-                Slett
-              </Button>,
-              <Button onClick={() => setEdit(!edit)}>Avbryt</Button>,
-              <Button onClick={() => saveTask()} type="primary">
-                Lagre
-              </Button>,
-            ]
-          : [<Button onClick={() => setEdit(!edit)}>Endre</Button>]
-      }
-      style={{ marginTop: 10 }}
-    >
+  const editTask = () => {
+    return (
       <Form layout="vertical">
         <Form.Item
           label="Oppgave lokasjon"
@@ -135,26 +104,22 @@ const TaskEditor: React.FC<ITaskEditor> = ({
             "Setter lokasjon for oppgaven. Man må være innenfor en radius på 20m til valgt lokasjon for å få opp oppgaven. Er ingen lokasjon satt vil oppgaven vises uten at man trenger å forflytte seg til den."
           }
         >
-          <Button disabled={!edit} onClick={() => setSelectPosition(true)}>
-            Velg lokasjon
-          </Button>
-          <Button disabled={!edit} danger onClick={() => setPosition(null)}>
+          <Button onClick={() => setSelectPosition(true)}>Velg lokasjon</Button>
+          <Button danger onClick={() => setPosition(null)}>
             Slett lokasjon
           </Button>
 
           <br />
-          {viewPosition()}
+          <ViewPosition position={position} />
         </Form.Item>
         <Form.Item label="Oppgave tekst">
           <Input
-            disabled={!edit}
             value={description || ""}
             onChange={(e) => setDescription(e.target.value)}
           />
         </Form.Item>
         <Form.Item label="Oppgave type">
           <Radio.Group
-            disabled={!edit}
             onChange={(e) => {
               setType(e.target.value);
               setCorrect("");
@@ -169,7 +134,6 @@ const TaskEditor: React.FC<ITaskEditor> = ({
         {type === "tekst" && (
           <Form.Item label="Riktig svar">
             <Input
-              disabled={!edit}
               value={correct || ""}
               onChange={(e) => setCorrect(e.target.value)}
             />
@@ -180,14 +144,12 @@ const TaskEditor: React.FC<ITaskEditor> = ({
           <>
             <Form.Item label="Alternativer">
               <Search
-                disabled={!edit}
                 placeholder="Nytt alternativ"
                 allowClear
                 enterButton="Legg til"
                 onSearch={(verdi) => addAlternative(verdi)}
               />
               <Radio.Group
-                disabled={!edit}
                 defaultValue="a"
                 size="large"
                 onChange={(e) => setCorrect(e.target.value)}
@@ -207,6 +169,35 @@ const TaskEditor: React.FC<ITaskEditor> = ({
           </>
         )}
       </Form>
+    );
+  };
+
+  return (
+    <Card
+      title={"Oppgave " + number}
+      extra={
+        ready ? (
+          <Tooltip title="Oppgaven er klar">
+            <CheckCircleTwoTone twoToneColor="#52c41a" />
+          </Tooltip>
+        ) : (
+          <Tooltip title="Oppgaven er ufulstendig og vil ikke vises i jakten">
+            <FrownTwoTone twoToneColor={"red"} />
+          </Tooltip>
+        )
+      }
+      actions={[
+        <Button danger onClick={() => deleteTask(task.taskId)}>
+          Slett
+        </Button>,
+        <Button onClick={() => back()}>Avbryt</Button>,
+        <Button onClick={() => saveTask()} type="primary">
+          Lagre
+        </Button>,
+      ]}
+      style={{ marginTop: 10 }}
+    >
+      {editTask()}
     </Card>
   );
 };
