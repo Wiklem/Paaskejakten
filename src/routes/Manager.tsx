@@ -50,7 +50,6 @@ const Manager: React.FC = () => {
       {uid && <NewHunt id={uid} reload={() => reload()} />}
       <br />
       <List
-        style={{ width: " 400px" }}
         size="large"
         bordered
         dataSource={data}

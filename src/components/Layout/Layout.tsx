@@ -8,6 +8,7 @@ import Manager from "../../routes/Manager";
 import Hunt from "../../routes/Hunt";
 import EasterContextProvider from "../../context/EasterContext";
 import Help from "../../routes/Help";
+import { Col, Row } from "antd";
 
 interface ILayout {}
 
@@ -17,32 +18,37 @@ const Layout: React.FC<ILayout> = () => {
       <Router>
         <div className={styles.layout}>
           <Header />
-          <div className={styles.container}>
-            <Switch>
-              <Route path={"/administrer/:id"}>
-                <EasterContextProvider>
-                  <Manager />
-                </EasterContextProvider>
-              </Route>
-              <Route path={"/administrer"}>
-                <EasterContextProvider>
-                  <Manager />
-                </EasterContextProvider>
-              </Route>
-              <Route path={"/jakt/:id"}>
-                <EasterContextProvider>
-                  <Hunt />
-                </EasterContextProvider>
-              </Route>
-              <Route path={"/hjelp"}>
-                <Help />
-              </Route>
-              <Route path={"/"}>
-                <Landingpage />
-              </Route>
-            </Switch>
-          </div>
-
+          <Row>
+            <Col xs={1} md={2} xl={4} />
+            <Col xs={22} md={20} xl={16}>
+              <div className={styles.container}>
+                <Switch>
+                  <Route path={"/administrer/:id"}>
+                    <EasterContextProvider>
+                      <Manager />
+                    </EasterContextProvider>
+                  </Route>
+                  <Route path={"/administrer"}>
+                    <EasterContextProvider>
+                      <Manager />
+                    </EasterContextProvider>
+                  </Route>
+                  <Route path={"/jakt/:id"}>
+                    <EasterContextProvider>
+                      <Hunt />
+                    </EasterContextProvider>
+                  </Route>
+                  <Route path={"/hjelp"}>
+                    <Help />
+                  </Route>
+                  <Route path={"/"}>
+                    <Landingpage />
+                  </Route>
+                </Switch>
+              </div>
+            </Col>
+            <Col xs={1} md={2} xl={4} />
+          </Row>
           <div className={styles.footer}>
             Påskejakten.no - Copyright © Wiklem.no. All Rights Reserved
           </div>

@@ -33,65 +33,63 @@ const HuntEditor: React.FC<IEditHunt> = ({ hunt, reload }) => {
   };
 
   return (
-    <div>
-      <Card
-        actions={[
-          <Popconfirm
-            title="Er du sikker på at du vil slette påskejakten og alle tilhørende oppgaver?"
-            onConfirm={() => deleteHunt()}
-            onCancel={() => {}}
-            okText="Ja"
-            cancelText="Nei"
-          >
-            <Button danger>Slett</Button>
-          </Popconfirm>,
-          <Button onClick={() => updateHunt()}>Lagre</Button>,
-        ]}
-      >
-        <Form layout="vertical">
-          <Form.Item
-            label="Name"
-            tooltip={"Navnet som skal vises for påskejakten"}
-          >
-            <Input value={name} onChange={(e) => setName(e.target.value)} />
-          </Form.Item>
+    <Card
+      actions={[
+        <Popconfirm
+          title="Er du sikker på at du vil slette påskejakten og alle tilhørende oppgaver?"
+          onConfirm={() => deleteHunt()}
+          onCancel={() => {}}
+          okText="Ja"
+          cancelText="Nei"
+        >
+          <Button danger>Slett</Button>
+        </Popconfirm>,
+        <Button onClick={() => updateHunt()}>Lagre</Button>,
+      ]}
+    >
+      <Form layout="vertical">
+        <Form.Item
+          label="Name"
+          tooltip={"Navnet som skal vises for påskejakten"}
+        >
+          <Input value={name} onChange={(e) => setName(e.target.value)} />
+        </Form.Item>
 
-          <Form.Item
-            label="Aktiv dato"
-            tooltip={
-              "Dato påskejakten skal bli aktiv. Hvis ingen dato blir satt er påskejakten automatisk aktiv."
-            }
-          >
-            <DatePicker
-              locale={locale}
-              value={activeDate ? moment(activeDate) : null}
-              showTime
-              onChange={(date, dateString) => setActiveDate(dateString)}
-            />
-          </Form.Item>
-          <Form.Item
-            label="Ferdig tittel"
-            tooltip={
-              "Tittel på kortet som kommer opp når alle oppgavene i påskejakten er løst"
-            }
-          >
-            <Input
-              value={finishTitle}
-              onChange={(e) => setFinishTitle(e.target.value)}
-            />
-          </Form.Item>
-          <Form.Item
-            label="Ferdig tekst"
-            tooltip={"Teksten i kortet som kommer opp når påskejakten er løst"}
-          >
-            <TextArea
-              value={finishText}
-              onChange={(e) => setFinishText(e.target.value)}
-            />
-          </Form.Item>
-        </Form>
-      </Card>
-    </div>
+        <Form.Item
+          label="Aktiv dato"
+          tooltip={
+            "Dato påskejakten skal bli aktiv. Hvis ingen dato blir satt er påskejakten automatisk aktiv."
+          }
+        >
+          <DatePicker
+            locale={locale}
+            value={activeDate ? moment(activeDate) : null}
+            showTime
+            onChange={(date, dateString) => setActiveDate(dateString)}
+          />
+        </Form.Item>
+        <Form.Item
+          label="Ferdig tittel"
+          tooltip={
+            "Tittel på kortet som kommer opp når alle oppgavene i påskejakten er løst"
+          }
+        >
+          <Input
+            value={finishTitle}
+            onChange={(e) => setFinishTitle(e.target.value)}
+          />
+        </Form.Item>
+        <Form.Item
+          label="Ferdig tekst"
+          tooltip={"Teksten i kortet som kommer opp når påskejakten er løst"}
+        >
+          <TextArea
+            value={finishText}
+            onChange={(e) => setFinishText(e.target.value)}
+          />
+        </Form.Item>
+      </Form>
+    </Card>
   );
 };
 

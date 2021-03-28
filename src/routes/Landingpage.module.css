@@ -1,6 +1,8 @@
-.eapsterEgg {
-    margin: 50px;
-    justify-content: center;
+.easterEgg {
+    display: block;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
     height: 50vmin;
     pointer-events: none;
 }
