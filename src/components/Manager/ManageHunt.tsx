@@ -46,7 +46,7 @@ const ManageHunt: React.FC<IManageHunt> = ({ huntId }) => {
         onBack={() => history.push("/administrer")}
         title={data.name}
         extra={[
-          <>
+          <React.Fragment key={"top"}>
             <br />
             <span>Opprettet: {moment(data.date).format("DD.MM.YYYY")}</span>
             <br />
@@ -54,7 +54,7 @@ const ManageHunt: React.FC<IManageHunt> = ({ huntId }) => {
               Kode: <strong>{data.huntId}</strong>
             </span>
             <br />
-          </>,
+          </React.Fragment>,
           <Button
             key="list-loadmore-edit"
             icon={<ShareAltOutlined />}
@@ -69,13 +69,8 @@ const ManageHunt: React.FC<IManageHunt> = ({ huntId }) => {
           </Button>,
         ]}
       />
-
-      <Tabs
-        defaultActiveKey="1"
-        style={{ background: "white" }}
-        type="card"
-        centered
-      >
+      <br />
+      <Tabs defaultActiveKey="1" type="card" centered>
         <TabPane tab="Endre Jakt" key="1">
           <HuntEditor hunt={data} reload={() => reload()} />
         </TabPane>

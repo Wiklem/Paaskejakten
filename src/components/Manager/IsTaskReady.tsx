@@ -10,7 +10,7 @@ export const checkReady = (task: ITask): boolean => {
     if (task.alternatives && task.alternatives.length) {
       return true;
     }
-  } else if (task.type) {
+  } else if (task.type && check) {
     return true;
   } else {
     return false;

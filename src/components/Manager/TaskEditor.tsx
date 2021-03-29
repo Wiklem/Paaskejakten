@@ -202,8 +202,8 @@ const TaskEditor: React.FC<ITaskEditor> = ({
                 <div>
                   Trykk på riktig alternativ som er riktig for å sette riktig
                   svar.
-                  {task.alternatives.map((a) => (
-                    <div style={{ padding: "10px" }}>
+                  {task.alternatives.map((a, key) => (
+                    <div key={key} style={{ padding: "10px" }}>
                       {task.correct !== a && (
                         <Button onClick={() => removeAlternative(a)}>
                           <DeleteOutlined />
