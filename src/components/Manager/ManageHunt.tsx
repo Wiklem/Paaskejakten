@@ -46,6 +46,15 @@ const ManageHunt: React.FC<IManageHunt> = ({ huntId }) => {
         onBack={() => history.push("/administrer")}
         title={data.name}
         extra={[
+          <>
+            <br />
+            <span>Opprettet: {moment(data.date).format("DD.MM.YYYY")}</span>
+            <br />
+            <span>
+              Kode: <strong>{data.huntId}</strong>
+            </span>
+            <br />
+          </>,
           <Button
             key="list-loadmore-edit"
             icon={<ShareAltOutlined />}
@@ -59,16 +68,6 @@ const ManageHunt: React.FC<IManageHunt> = ({ huntId }) => {
             Kopier lenke til påskejakt
           </Button>,
         ]}
-        subTitle={
-          <>
-            <br />
-            <span>Opprettet: {moment(data.date).format("DD.MM.YYYY")}</span>
-            <br />
-            <span>
-              Kode: <strong>{data.huntId}</strong>
-            </span>
-          </>
-        }
       />
 
       <Tabs
