@@ -1,15 +1,18 @@
 import React from "react";
 import Loading from "../components/Loading";
+import { ILocation } from "../utils/types";
+import { LoadScript } from "@react-google-maps/api";
+import API from "../utils/keys";
 
 interface IEasterContext {
-  currentPosition: object;
+  currentPosition: ILocation | null;
 }
 export const EasterContext = React.createContext<IEasterContext>({
-  currentPosition: {},
+  currentPosition: null,
 });
 
 const EasterContextProvider: React.FC = ({ children }) => {
-  const [currentPosition, setCurrentPosition] = React.useState({});
+  const [currentPosition, setCurrentPosition] = React.useState<ILocation>();
 
   const success = (position: any) => {
     const currentPosition = {
@@ -33,7 +36,7 @@ const EasterContextProvider: React.FC = ({ children }) => {
         currentPosition,
       }}
     >
-      {children}
+      <LoadScript googleMapsApiKey={API.GOOGLE}> {children} </LoadScript>
     </EasterContext.Provider>
   );
 };

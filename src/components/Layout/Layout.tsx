@@ -12,6 +12,7 @@ import { Col, Row } from "antd";
 import Login from "../../routes/Login";
 import Privacy from "../../routes/Privacy";
 import Contact from "../../routes/Contact";
+import { Link } from "react-router-dom";
 
 interface ILayout {}
 
@@ -62,7 +63,8 @@ const Layout: React.FC<ILayout> = () => {
             <Col xs={1} md={2} xl={4} />
           </Row>
           <div className={styles.footer}>
-            Påskejakten.no - Copyright © Wiklem.no. All Rights Reserved
+            <Link to={"/"}>Påskejakten.no</Link> - Copyright © Wiklem.no. All
+            Rights Reserved
           </div>
         </div>
       </Router>

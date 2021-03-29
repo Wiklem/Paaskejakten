@@ -54,7 +54,6 @@ const TaskEditor: React.FC<ITaskEditor> = ({
     }
   }, [taskId, reloadKey]);
 
-  console.log(task && task.alternatives);
   const handleChange = (e: any) => {
     const target = e.target;
     const value = target.value;
