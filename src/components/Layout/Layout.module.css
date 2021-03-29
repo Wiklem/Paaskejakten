@@ -33,7 +33,7 @@
 
 .rainbow {
     text-align: center;
-    font-size: 32px;
+    font-size: calc(20px + 1vmin);
     font-family: monospace;
     letter-spacing: 5px;
     background: linear-gradient(to right, #ECC000, #62B7BE , #00ff00);
