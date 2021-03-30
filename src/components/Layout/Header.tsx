@@ -40,7 +40,7 @@ const Header: React.FC = () => {
             </>
           ) : (
             <Link to={"/login"}>
-              <Button icon={<LoginOutlined />}>Log inn/opprett jakt</Button>
+              <Button icon={<LoginOutlined />}>Logg inn/opprett jakt</Button>
             </Link>
           )
         }
