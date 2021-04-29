@@ -26,30 +26,30 @@ const Layout: React.FC<ILayout> = () => {
             <Col xs={22} md={20} xl={16}>
               <div className={styles.container}>
                 <Switch>
-                  <Route path={"/administrer/:id"}>
-                    <EasterContextProvider>
-                      <Manager />
-                    </EasterContextProvider>
-                  </Route>
-                  <Route path={"/administrer"}>
-                    <EasterContextProvider>
-                      <Manager />
-                    </EasterContextProvider>
-                  </Route>
-                  <Route path={"/login"}>
-                    <Login />
-                  </Route>
-                  <Route path={"/jakt/:id"}>
-                    <EasterContextProvider>
-                      <Hunt />
-                    </EasterContextProvider>
-                  </Route>
+                  {/*<Route path={"/administrer/:id"}>*/}
+                  {/*  <EasterContextProvider>*/}
+                  {/*    <Manager />*/}
+                  {/*  </EasterContextProvider>*/}
+                  {/*</Route>*/}
+                  {/*<Route path={"/administrer"}>*/}
+                  {/*  <EasterContextProvider>*/}
+                  {/*    <Manager />*/}
+                  {/*  </EasterContextProvider>*/}
+                  {/*</Route>*/}
+                  {/*<Route path={"/login"}>*/}
+                  {/*  <Login />*/}
+                  {/*</Route>*/}
+                  {/*<Route path={"/jakt/:id"}>*/}
+                  {/*  <EasterContextProvider>*/}
+                  {/*    <Hunt />*/}
+                  {/*  </EasterContextProvider>*/}
+                  {/*</Route>*/}
                   <Route path={"/privacy"}>
                     <Privacy />
                   </Route>
-                  <Route path={"/kontakt"}>
-                    <Contact />
-                  </Route>
+                  {/*<Route path={"/kontakt"}>*/}
+                  {/*  <Contact />*/}
+                  {/*</Route>*/}
                   <Route path={"/"}>
                     <Landingpage />
                   </Route>

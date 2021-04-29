@@ -42,35 +42,38 @@ const Landingpage: React.FC = () => {
   );
   return (
     <>
-      <Card title={"Velkommen til påskejakten!"}>
-        <Form layout="vertical">
-          <Form.Item
-            label="Påskejakt kode"
-            tooltip={
-              "Her skriver du inn koden du har fått for å starte påskejakten"
-            }
-          >
-            <Input
-              placeholder={"kode"}
-              onChange={(e) => setCode(e.target.value)}
-            />
-          </Form.Item>
-        </Form>
+        <Card title={"Velkommen til påskejakten!!"}>
+            Påsken er over for denne gang, men det er mulig å lage andre rebuser og skattejakter på <a href={"https://geohunt.no"}>GeoHunt.no</a>.
+        </Card>
+      {/*<Card title={"Velkommen til påskejakten!"}>*/}
+      {/*  <Form layout="vertical">*/}
+      {/*    <Form.Item*/}
+      {/*      label="Påskejakt kode"*/}
+      {/*      tooltip={*/}
+      {/*        "Her skriver du inn koden du har fått for å starte påskejakten"*/}
+      {/*      }*/}
+      {/*    >*/}
+      {/*      <Input*/}
+      {/*        placeholder={"kode"}*/}
+      {/*        onChange={(e) => setCode(e.target.value)}*/}
+      {/*      />*/}
+      {/*    </Form.Item>*/}
+      {/*  </Form>*/}
 
-        <Link to={"/jakt/" + code}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              marginTop: "10px",
-            }}
-          >
-            <Button key="submit" type="primary" disabled={!code}>
-              Start
-            </Button>
-          </div>
-        </Link>
-      </Card>
+      {/*  <Link to={"/jakt/" + code}>*/}
+      {/*    <div*/}
+      {/*      style={{*/}
+      {/*        display: "flex",*/}
+      {/*        justifyContent: "center",*/}
+      {/*        marginTop: "10px",*/}
+      {/*      }}*/}
+      {/*    >*/}
+      {/*      <Button key="submit" type="primary" disabled={!code}>*/}
+      {/*        Start*/}
+      {/*      </Button>*/}
+      {/*    </div>*/}
+      {/*  </Link>*/}
+      {/*</Card>*/}
       <br />
       <Alert type={"info"} message={message} />
       <img className={styles.easterEgg} src={logo} alt="logo" />

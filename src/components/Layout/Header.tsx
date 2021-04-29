@@ -22,28 +22,28 @@ const Header: React.FC = () => {
           </Link>
         }
         avatar={{ src: logo, shape: "square" }}
-        extra={
-          uid ? (
-            <>
-              <Link to={"/administrer"}>
-                <Button icon={<EditOutlined />}>Mine påskejakter</Button>
-              </Link>
-              <Button
-                icon={<LogoutOutlined />}
-                onClick={() => {
-                  signOut();
-                  history.push("/");
-                }}
-              >
-                Logg ut
-              </Button>
-            </>
-          ) : (
-            <Link to={"/login"}>
-              <Button icon={<LoginOutlined />}>Logg inn/opprett jakt</Button>
-            </Link>
-          )
-        }
+        // extra={
+        //   uid ? (
+        //     <>
+        //       <Link to={"/administrer"}>
+        //         <Button icon={<EditOutlined />}>Mine påskejakter</Button>
+        //       </Link>
+        //       <Button
+        //         icon={<LogoutOutlined />}
+        //         onClick={() => {
+        //           signOut();
+        //           history.push("/");
+        //         }}
+        //       >
+        //         Logg ut
+        //       </Button>
+        //     </>
+        //   ) : (
+        //     <Link to={"/login"}>
+        //       <Button icon={<LoginOutlined />}>Logg inn/opprett jakt</Button>
+        //     </Link>
+        //   )
+        // }
       />
     </div>
   );
